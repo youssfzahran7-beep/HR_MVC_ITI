@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="Domain.HR/Domain.HR.csproj" Id="38c026b0-bc55-4328-b43a-f37d8ff2bf5c" />
+  <Project Path="Application.HR/Application.HR.csproj" />
+  <Project Path="Infrastructure.HR/Infrastructure.HR.csproj" />
   <Project Path="HR_MVC_ITI/HR_MVC_ITI.csproj" />
 </Solution>

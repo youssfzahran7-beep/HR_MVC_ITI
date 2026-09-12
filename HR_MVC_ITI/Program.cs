@@ -1,3 +1,11 @@
+using Application.HR.IServices;
+using Application.HR.Mapping;
+using Application.HR.Services;
+using Domain.HR.IRepository;
+using Infrastructure.HR.Data;
+using Infrastructure.HR.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 namespace HR_MVC_ITI
 {
     public class Program
@@ -7,6 +15,22 @@ namespace HR_MVC_ITI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<HRDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("HRConnection")));
+
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // AutoMapper
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+            // Application Services
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+            builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+            builder.Services.AddScoped<IContractService, ContractService>();
+            builder.Services.AddScoped<IPayrollService, PayrollService>();
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
