@@ -29,3 +29,4 @@ public enum ContractStatus
     Activated, 
     Terminated 
 }
+

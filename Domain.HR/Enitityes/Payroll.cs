@@ -10,7 +10,7 @@ public class Payroll
 
     public Employee? Employee { get; set; }
 
-    [Range(1, 12)] 
+
     public int Month { get; set; }
 
     public int Year { get; set; }
@@ -21,5 +21,12 @@ public class Payroll
 
     public decimal OvertimeAdditions { get; set; }
 
-    public decimal NetSalary { get; set; }
+    public decimal NetSalary => BasicSalary - LateDeductions + OvertimeAdditions;
+   
+    
+    // في الـ Entity — خليها auto-property عادية
+  //  public decimal NetSalary { get; set; }
+
+    // في الـ Service أو Controller قبل ما تعمل Save:
+    //payroll.NetSalary = payroll.BasicSalary - payroll.LateDeductions + payroll.OvertimeAdditions;
 }

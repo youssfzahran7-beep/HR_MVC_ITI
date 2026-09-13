@@ -1,0 +1,32 @@
+using HRSystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Infrastructure.HR.Data.Configurations;
+
+public class ContractConfiguration : IEntityTypeConfiguration<Contract>
+{
+    public void Configure(EntityTypeBuilder<Contract> builder)
+    {
+        builder.HasKey(c => c.Id);
+
+        builder.Property(c => c.BasicSalary)
+            .HasColumnType("decimal(18,2)")
+            .IsRequired();
+
+        builder.Property(c => c.StartDate)
+            .IsRequired();
+
+        builder.Property(c => c.Status)
+            .IsRequired()
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        builder.HasOne(c => c.Employee)
+            .WithMany(e => e.Contracts)
+            .HasForeignKey(c => c.EmployeeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.ToTable("Contracts");
+    }
+}
