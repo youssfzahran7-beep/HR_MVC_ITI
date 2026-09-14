@@ -1,9 +1,11 @@
 using HR_MVC_ITI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace HR_MVC_ITI.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()

@@ -25,11 +25,10 @@ public class PayrollConfiguration : IEntityTypeConfiguration<Payroll>
         builder.Property(p => p.OvertimeAdditions)
             .HasColumnType("decimal(18,2)");
 
-
         builder.HasOne(p => p.Employee)
             .WithMany(e => e.Payrolls)
             .HasForeignKey(p => p.EmployeeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.ToTable("Payrolls");
     }
