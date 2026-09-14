@@ -1,32 +1,29 @@
-using Application.HR.DTOs;
-using Application.HR.IServices;
+
+using HR_MVC_ITI.Models.Enitityes;
+using HR_MVC_ITI.Models.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HR_MVC_ITI.Controllers;
 
 public class EmployeeController : Controller
 {
-    private readonly IEmployeeService _employeeService;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public EmployeeController(IEmployeeService employeeService)
+    public EmployeeController(IUnitOfWork unitOfWork)
     {
-        _employeeService = employeeService;
+        _unitOfWork = unitOfWork;
     }
 
-    // GET: Employee
-    [HttpGet("Employee")]
-    [HttpGet("Employee/Index")]
     public async Task<IActionResult> Index()
     {
-        var employees = await _employeeService.GetAllAsync();
+        var employees = await _unitOfWork.Employees.GetAllAsync();
         return View(employees);
     }
 
-    // GET: Employee/Details/5
-    [HttpGet("Employee/Details/{id}")]
+   
     public async Task<IActionResult> Details(int id)
     {
-        var employee = await _employeeService.GetByIdAsync(id);
+        var employee = await _unitOfWork.Employees.GetByIdAsync(id);
         if (employee == null)
         {
             return NotFound();
@@ -35,31 +32,30 @@ public class EmployeeController : Controller
         return View(employee);
     }
 
-    // GET: Employee/Create
-    [HttpGet("Employee/Create")]
+  
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: Employee/Create
-    [HttpPost("Employee/Create")]
+    
+    [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create( EmployeeDTO employeeDto)
+    public async Task<IActionResult> Create(Employee employee)
     {
         if (ModelState.IsValid)
         {
-            await _employeeService.AddAsync(employeeDto);
+            await _unitOfWork.Employees.AddAsync(employee);
+            await _unitOfWork.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(employeeDto);
+        return View(employee);
     }
 
-    // GET: Employee/Edit/5
-    [HttpGet("Employee/Edit/{id}")]
+    
     public async Task<IActionResult> Edit(int id)
     {
-        var employee = await _employeeService.GetByIdAsync(id);
+        var employee = await _unitOfWork.Employees.GetByIdAsync(id);
         if (employee == null)
         {
             return NotFound();
@@ -68,29 +64,29 @@ public class EmployeeController : Controller
         return View(employee);
     }
 
-    // POST: Employee/Edit/5
-    [HttpPost("Employee/Edit/{id}")]
+    
+    [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, EmployeeDTO employeeDto)
+    public async Task<IActionResult> Edit(int id, Employee employee)
     {
-        if (id != employeeDto.Id)
+        if (id != employee.Id)
         {
             return BadRequest();
         }
 
         if (ModelState.IsValid)
         {
-            await _employeeService.UpdateAsync(employeeDto);
+            await _unitOfWork.Employees.UpdateAsync(employee);
+            await _unitOfWork.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(employeeDto);
+        return View(employee);
     }
 
-    // GET: Employee/Delete/5
-    [HttpGet("Employee/Delete/{id}")]
+ 
     public async Task<IActionResult> Delete(int id)
     {
-        var employee = await _employeeService.GetByIdAsync(id);
+        var employee = await _unitOfWork.Employees.GetByIdAsync(id);
         if (employee == null)
         {
             return NotFound();
@@ -99,13 +95,17 @@ public class EmployeeController : Controller
         return View(employee);
     }
 
-    // POST: Employee/Delete/5
-    [HttpPost("Employee/Delete/{id}")]
-    [ActionName("Delete")]
+  
+    [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _employeeService.DeleteAsync(id);
+        var employee = await _unitOfWork.Employees.GetByIdAsync(id);
+        if (employee != null)
+        {
+            _unitOfWork.Employees.Delete(employee);
+            await _unitOfWork.SaveChangesAsync();
+        }
         return RedirectToAction(nameof(Index));
     }
 }
