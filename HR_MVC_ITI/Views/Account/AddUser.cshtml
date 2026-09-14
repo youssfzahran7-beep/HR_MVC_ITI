@@ -1,0 +1,65 @@
+@model HR_MVC_ITI.Models.ViewModels.AddUserViewModel
+
+@{
+    ViewData["Title"] = "Create AppUser";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-lg border-0 rounded-lg mt-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="text-center font-weight-light my-2">
+                    <i class="fas fa-user-plus me-2"></i>Create AppUser
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form asp-controller="Account" asp-action="AddUser" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <p class="text-muted small mb-4">This creates an employee login account. You can link it to an employee profile next.</p>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="FullName" class="form-control" placeholder="Full name" />
+                        <label asp-for="FullName"></label>
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Email" class="form-control" placeholder="name@company.com" />
+                        <label asp-for="Email"></label>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Password" class="form-control" placeholder="Password" />
+                        <label asp-for="Password"></label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" />
+                        <label asp-for="ConfirmPassword"></label>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between mt-4">
+                        <a class="btn btn-secondary" asp-controller="Home" asp-action="Index">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Create AppUser</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

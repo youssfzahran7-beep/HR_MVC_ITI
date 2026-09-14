@@ -25,7 +25,7 @@ public class ContractConfiguration : IEntityTypeConfiguration<Contract>
         builder.HasOne(c => c.Employee)
             .WithMany(e => e.Contracts)
             .HasForeignKey(c => c.EmployeeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.ToTable("Contracts");
     }
