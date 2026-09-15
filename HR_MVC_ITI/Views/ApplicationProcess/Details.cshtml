@@ -1,0 +1,78 @@
+﻿@model HR_MVC_ITI.Models.Enitityes.ApplicationProcess
+
+@{
+    ViewData["Title"] = "Application Details";
+}
+
+<h1 class="mt-4">Application Details</h1>
+
+<div class="card mb-4">
+
+    <div class="card-header">
+        <i class="fas fa-file-alt me-1"></i>
+        Application Tracking
+    </div>
+
+    <div class="card-body">
+
+        <dl class="row">
+
+            <dt class="col-sm-3">
+                Application ID
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Id
+            </dd>
+
+
+            <dt class="col-sm-3">
+                Candidate
+            </dt>
+
+            <dd class="col-sm-9">
+                Candidate #@Model.CandidateId
+            </dd>
+
+
+            <dt class="col-sm-3">
+                Job
+            </dt>
+
+            <dd class="col-sm-9">
+                Job #@Model.RecruitmentId
+            </dd>
+
+
+            <dt class="col-sm-3">
+                Applied Date
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.AppliedDate.ToString("dd/MM/yyyy")
+            </dd>
+
+
+            <dt class="col-sm-3">
+                Current Stage
+            </dt>
+
+            <dd class="col-sm-9">
+                <span class="badge bg-primary">
+                    @Model.CurrentStage
+                </span>
+            </dd>
+
+        </dl>
+
+        <div class="mt-3">
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Back to Pipeline
+            </a>
+
+        </div>
+
+    </div>
+</div>
