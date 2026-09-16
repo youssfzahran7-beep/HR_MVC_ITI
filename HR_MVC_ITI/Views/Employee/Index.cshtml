@@ -1,0 +1,59 @@
+@model IEnumerable<HR_MVC_ITI.Models.Enitityes.Employee>
+
+@{
+    ViewData["Title"] = "Employees";
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Employees</h1>
+        <p class="text-muted mb-0">Manage employee profiles and their linked user accounts.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-user-plus me-2"></i>Add employee
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h2 class="h5">No employees yet</h2>
+            <p class="text-muted mb-3">Create an employee profile after creating its user account.</p>
+            <a asp-action="Create" class="btn btn-primary">Add the first employee</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Employee</th>
+                        <th scope="col">National ID</th>
+                        <th scope="col">User account</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var employee in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@employee.FullName</td>
+                        <td>@employee.NationalId</td>
+                        <td><span class="font-monospace small">@employee.UserId</span></td>
+                        <td class="text-end text-nowrap">
+                            <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-secondary" aria-label="View @employee.FullName"><i class="fas fa-eye"></i></a>
+                            <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-primary" aria-label="Edit @employee.FullName"><i class="fas fa-pen"></i></a>
+                            <a asp-action="Delete" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-danger" aria-label="Delete @employee.FullName"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
