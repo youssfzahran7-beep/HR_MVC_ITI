@@ -6,7 +6,7 @@ public class Attendance
 {
     public int Id { get; set; }
 
-    public int EmployeeId { get; set; }
+    public virtual int EmployeeId { get; set; }
 
     public Employee? Employee { get; set; }
 

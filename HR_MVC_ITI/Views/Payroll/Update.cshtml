@@ -1,0 +1,27 @@
+﻿@{
+    int id = ViewBag.Id;
+
+}
+
+<form method="get" action="/Payroll/SaveUpdatedPayroll/@id" class="form form-control">
+
+    <label>Employee Name</label>
+    <select name="emplyeename" class="form-control">
+        @foreach (var em in Model)
+        {
+            <option>@em.FullName</option>
+        }
+    </select>
+    <label>Month</label>
+    <input type="number" name="month" />
+    <label>year</label>
+    <input type="number" name=" year" />
+    <label>Basic Salary</label>
+    <input type="number" name="basicsalary" />
+    <label>Late Deductions</label>
+    <input type="number" name=" latedeductions" />
+    <label>Overtime Additions</label>
+    <input type="number" name="overtimeadditions"
+    <input type="submit" class="btn-success" />
+</form>
+<a href="/Payroll/GetAll">Backtotable</a>/;;

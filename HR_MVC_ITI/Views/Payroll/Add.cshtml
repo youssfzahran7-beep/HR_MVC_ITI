@@ -1,0 +1,22 @@
+﻿<form method="get" action="/Payroll/SavePayroll" class="form-control">
+    <label>Employee Name</label>
+    <select name="employeename" class="form-control">
+        @foreach (var em in Model)
+        {
+            <option>@em.FullName</option>
+        }
+    </select>
+    <label>Month</label>
+    <input type="number" name="month" />
+    <label>year</label>
+    <input type="number" name=" year" />
+    <label>Basic Salary</label>
+    <input type="number" name="basicsalary" />
+    <label>Late Deductions</label>
+    <input type="number" name=" latedeductions" />
+    <label>Overtime Additions</label>
+    <input type="number" name="overtimeadditions"
+
+    <input type="submit" class="btn-success" />
+</form>
+<a href="/Payroll/GetAll">Backtotable</a>/;;

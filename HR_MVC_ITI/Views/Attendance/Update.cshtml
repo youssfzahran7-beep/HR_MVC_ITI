@@ -1,0 +1,27 @@
+﻿@{
+    int id = ViewBag.Id;
+
+}
+
+<form method="get" action="/Attendance/SaveUpdatedAttendance/@id" class="form form-control">
+   
+    <label>Employee Name</label>
+    <select name="emplyeename" class="form-control">
+        @foreach(var em in Model)
+            {
+                <option>@em.FullName</option>
+            }
+        </select>
+    <label>Date</label>
+    <input type="datetime" name="date" />
+    <label>Checkin time</label>
+    <input type="datetime" name="checkintime" />
+    <label>Checkout time</label>
+    <input type="datetime" name="checkouttime" />
+    <label>Late Minutes</label>
+    <input type="number" name="lateminutes" />
+    <label>Overtime Hours</label>
+    <input type="number" name="overtimehours" />
+    <input type="submit" class="btn-success" />
+</form>
+<a href="/Attendance/GetAll">Backtotable</a>
