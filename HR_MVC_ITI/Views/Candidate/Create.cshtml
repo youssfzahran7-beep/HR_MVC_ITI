@@ -1,0 +1,103 @@
+﻿@model HR_MVC_ITI.DTOs.CandidateDTO
+@{
+    ViewData["Title"] = "Create Candidate";
+}
+
+<h1 class="mt-4">Create Candidate</h1>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-user-plus me-1"></i>
+        Candidate Registration
+    </div>
+
+    <div class="card-body">
+
+        <form asp-action="Create"
+              method="post"
+              enctype="multipart/form-data">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FirstName"
+                       class="form-label">
+                    First Name
+                </label>
+
+                <input asp-for="FirstName"
+                       class="form-control" />
+
+                <span asp-validation-for="FirstName"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LastName"
+                       class="form-label">
+                    Last Name
+                </label>
+
+                <input asp-for="LastName"
+                       class="form-control" />
+
+                <span asp-validation-for="LastName"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Phone"
+                       class="form-label">
+                    Phone
+                </label>
+
+                <input asp-for="Phone"
+                       class="form-control" />
+
+                <span asp-validation-for="Phone"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Resume
+                </label>
+
+                <input type="file"
+                       name="resumeFile"
+                       class="form-control"
+                       accept=".pdf,.doc,.docx" />
+
+                <small class="text-muted">
+                    Upload your resume.
+                </small>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+                <i class="fas fa-save me-1"></i>
+                Register Candidate
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

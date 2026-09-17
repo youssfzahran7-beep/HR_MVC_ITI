@@ -1,0 +1,28 @@
+﻿<h1>The information of Attendance</h1>
+<a href="/Attendance/Add">Add new Attendance</a>
+<table border="10" style="width:100%;border-collapse:collapse;font-size:.95rem;background-color:#ffffff">
+    <tr>
+        <th>Id</th>
+        <th>Employee Name</th>
+        <th>Date</th>
+        <th>Checkin Time</th>
+        <th>Checkout time</th>
+        <th>Late Minutes</th>
+        <th>Overtime Hours</th>
+    </tr>
+    @foreach (var attendance in Model)
+    {
+        <tr>
+            <td>@attendance.Id</td>
+            <td>@attendance.Employee.EmployeeName</td>
+            <td>@attendance.Date</td>
+            <td>@attendance.CheckInTime</td>
+            <td>@attendance.CheckOutTime</td>
+            <td>@attendance.LateMinutes</td>
+            <td>@attendance.OvertimeHours</td>
+            <td><a href="/Attendance/Update/@attendance.Id">Update</a></td>
+            <td><a href="/Attendance/Delete/@attendance.Id">Delete</a></td>
+
+        </tr>
+    }
+</table>
