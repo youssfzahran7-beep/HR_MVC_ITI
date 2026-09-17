@@ -1,76 +1,119 @@
-﻿using HR_MVC_ITI.Models.Enitityes;
+﻿using AutoMapper;
+using HR_MVC_ITI.DTOs;
+using HR_MVC_ITI.Models.Enitityes;
+using HR_MVC_ITI.Models.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HR_MVC_ITI.Controllers
+namespace HR_MVC_ITI.Controllers;
+
+public class RecruitmentController : Controller
 {
-    public class RecruitmentController : Controller
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+
+    public RecruitmentController(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        // 1. Displays the list of all job postings
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        // 2. Retrieves specific job posting details
-        [HttpGet]
-        public IActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // 3. Renders the web page form to create a new job posting
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // 4. Receives form submission to save a new job posting
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Recruitment recruitment)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(recruitment);
-            }
-
-            // Data saving will be handled by the data-layer teammate.
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // 5. Renders the web page form populated with an existing job posting
-        [HttpGet]
-        public IActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // 6. Submits changes to update job posting details or status
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Recruitment recruitment)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(recruitment);
-            }
-
-            // Data updating will be handled by the data-layer teammate.
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // 7. Removes or archives a job posting
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            // Delete/archive will be handled by the data-layer teammate.
-
-            return RedirectToAction(nameof(Index));
-        }
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
-}
+
+    public async Task<IActionResult> Index()
+    {
+        var recruitments = await _unitOfWork.Recruitments.GetAllAsync();
+        var recruitmentDtos = _mapper.Map<IEnumerable<RecruitmentDTO>>(recruitments);
+        return View(recruitmentDtos);
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var recruitment = await _unitOfWork.Recruitments.GetByIdAsync(id);
+
+        if (recruitment == null)
+        {
+            return NotFound();
+        }
+        var recruitmentDto = _mapper.Map<RecruitmentDTO>(recruitment);
+        return View(recruitmentDto  );
+    }
+
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(RecruitmentDTO recruitmentDto)
+    {
+        if (ModelState.IsValid)
+        {
+            var recruitment = _mapper.Map<Recruitment>(recruitmentDto);
+            await _unitOfWork.Recruitments.AddAsync(recruitment);
+            await _unitOfWork.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View(recruitmentDto);
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var recruitment = await _unitOfWork.Recruitments.GetByIdAsync(id);
+
+        if (recruitment == null)
+        {
+            return NotFound();
+        }
+        var recruitmentDto = _mapper.Map<RecruitmentDTO>(recruitment);
+        return View(recruitmentDto);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, RecruitmentDTO recruitmentDto)
+    {
+        if (id != recruitmentDto.Id)
+        {
+            return BadRequest();
+        }
+
+        if (ModelState.IsValid)
+        {
+            var recruitment = _mapper.Map<Recruitment>(recruitmentDto);
+            await _unitOfWork.Recruitments.UpdateAsync(recruitment);
+            await _unitOfWork.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View(recruitmentDto);
+    }
+
+    public async Task<IActionResult> Delete(int id)
+    {
+        var recruitment = await _unitOfWork.Recruitments.GetByIdAsync(id);
+
+        if (recruitment == null)
+        {
+            return NotFound();
+        }
+        var recruitmentDto = _mapper.Map<RecruitmentDTO>(recruitment);
+        return View(recruitmentDto);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var recruitment = await _unitOfWork.Recruitments.GetByIdAsync(id);
+
+        if (recruitment != null)
+        {
+            _unitOfWork.Recruitments.Delete(recruitment);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+} 

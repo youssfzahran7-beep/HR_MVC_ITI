@@ -1,5 +1,4 @@
-﻿@model IEnumerable<HR_MVC_ITI.Models.Enitityes.ApplicationProcess>
-
+﻿@model IEnumerable<HR_MVC_ITI.DTOs.ApplicationProcessDTO>
 @{
     ViewData["Title"] = "Application Pipeline";
 }
@@ -104,17 +103,29 @@
 
                                     </div>
 
-                                    <form asp-action="UpdateStage"
+                                    <form asp-action="Edit"
                                           method="post"
                                           class="d-flex gap-2">
 
                                         @Html.AntiForgeryToken()
 
                                         <input type="hidden"
-                                               name="id"
+                                               name="Id"
                                                value="@application.Id" />
 
-                                        <select name="stage"
+                                        <input type="hidden"
+                                               name="CandidateId"
+                                               value="@application.CandidateId" />
+
+                                        <input type="hidden"
+                                               name="RecruitmentId"
+                                               value="@application.RecruitmentId" />
+
+                                        <input type="hidden"
+                                               name="AppliedDate"
+                                               value="@application.AppliedDate" />
+
+                                        <select name="CurrentStage"
                                                 class="form-select form-select-sm">
 
                                             @foreach (var stage in Enum.GetValues<HR_MVC_ITI.Models.Enumes.ApplicationStage>())
@@ -156,7 +167,6 @@
                                         Details
 
                                     </a>
-
 
                                     <!-- Cancel / Delete -->
                                     <form asp-action="Delete"

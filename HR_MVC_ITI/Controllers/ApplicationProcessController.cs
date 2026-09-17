@@ -1,67 +1,125 @@
-﻿using HR_MVC_ITI.Models.Enitityes;
+﻿using AutoMapper;
+using HR_MVC_ITI.DTOs;
+using HR_MVC_ITI.Models.Enitityes;
+using HR_MVC_ITI.Models.IRepository;
 using HR_MVC_ITI.Models.Enumes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HR_MVC_ITI.Controllers
+
+namespace HR_MVC_ITI.Controllers;
+
+public class ApplicationProcessController : Controller
 {
-    public class ApplicationProcessController : Controller
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+
+    public ApplicationProcessController(IUnitOfWork unitOfWork, IMapper mapper  )
     {
-        // 1. Displays the active application tracking pipeline
-        [HttpGet]
-        public IActionResult Index()
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var applications = await _unitOfWork.ApplicationProcesses.GetAllAsync();
+        var applicationDtos = _mapper.Map<IEnumerable<ApplicationProcessDTO>>(applications);
+        return View(applicationDtos);
+    }
+    public async Task<IActionResult> Details(int id)
+    {
+        var application = await _unitOfWork.ApplicationProcesses.GetByIdAsync(id);
+
+        if (application == null)
         {
-            return View();
+            return NotFound();
+        }
+        var applicationDto = _mapper.Map<ApplicationProcessDTO>(application);
+        return View(applicationDto);
+    }
+
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(ApplicationProcessDTO applicationDto)
+    {
+        if (ModelState.IsValid)
+        {
+            applicationDto.AppliedDate = DateTime.Now;
+            applicationDto.CurrentStage = ApplicationStage.Applied;
+
+            var applicationProcess =
+                _mapper.Map<ApplicationProcess>(applicationDto);
+
+            await _unitOfWork.ApplicationProcesses.AddAsync(applicationProcess);
+            await _unitOfWork.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // 2. Retrieves tracking details for a single application
-        [HttpGet]
-        public IActionResult Details(int id)
+        return View(applicationDto);
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(
+    int id,
+    ApplicationProcessDTO applicationDto)
+    {
+        if (id != applicationDto.Id)
         {
-            return View();
+            return BadRequest();
         }
 
-        // 3. Renders the job application form
-        [HttpGet]
-        public IActionResult Create()
+        if (ModelState.IsValid)
         {
-            return View();
-        }
+            var applicationProcess =
+                await _unitOfWork.ApplicationProcesses.GetByIdAsync(id);
 
-        // 4. Creates a new application
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(ApplicationProcess applicationProcess)
-        {
-            if (!ModelState.IsValid)
+            if (applicationProcess == null)
             {
-                return View(applicationProcess);
+                return NotFound();
             }
 
-            // Data layer will handle saving.
-            // CurrentStage = ApplicationStage.Applied
-            // AppliedDate = DateTime.Now
+            applicationProcess.CurrentStage = applicationDto.CurrentStage;
+
+            await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        // 5. Updates the application stage
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult UpdateStage(int id, ApplicationStage stage)
+        return View(applicationDto);
+    }
+
+
+    public async Task<IActionResult> Delete(int id)
+    {
+        var application = await _unitOfWork.ApplicationProcesses.GetByIdAsync(id);
+
+        if (application == null)
         {
-            // Data layer will handle updating the stage.
-
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
+        var applicationDto = _mapper.Map<ApplicationProcessDTO>(application);
+        return View(applicationDto );
+    }
 
-        // 6. Cancels/removes an application
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var application = await _unitOfWork.ApplicationProcesses.GetByIdAsync(id);
+
+        if (application != null)
         {
-            // Data layer will handle deletion/cancellation.
-
-            return RedirectToAction(nameof(Index));
+            _unitOfWork.ApplicationProcesses.Delete(application);
+            await _unitOfWork.SaveChangesAsync();
         }
+
+        return RedirectToAction(nameof(Index));
     }
 }
