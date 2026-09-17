@@ -1,20 +1,41 @@
-
 using HR_MVC_ITI.Data;
 using HR_MVC_ITI.Mapping;
+using HR_MVC_ITI.Models.Enitityes;
 using HR_MVC_ITI.Models.IRepository;
 using HR_MVC_ITI.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HR_MVC_ITI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<HRDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("HRConnection")));
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("HRConnection")));
+                  //  sqlOptions => sqlOptions.EnableRetryOnFailure()));
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<HRDbContext>()
+            .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/Login";
+            });
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -36,6 +57,7 @@ namespace HR_MVC_ITI
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

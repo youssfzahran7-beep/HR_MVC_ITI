@@ -22,23 +22,20 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(e => e.ProfileImagePath)
-            .HasMaxLength(500);
-
         builder.HasMany(e => e.Contracts)
             .WithOne(c => c.Employee)
             .HasForeignKey(c => c.EmployeeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasMany(e => e.Attendances)
             .WithOne(a => a.Employee)
             .HasForeignKey(a => a.EmployeeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasMany(e => e.Payrolls)
             .WithOne(p => p.Employee)
             .HasForeignKey(p => p.EmployeeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.ToTable("Employees");
     }
