@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<Payroll> Payrolls { get; }
     public IGenericRepository<Candidate> Candidates { get; }
     public IGenericRepository<ApplicationProcess> ApplicationProcesses { get; }
+    public IGenericRepository<Recruitment> Recruitments { get; }    
 
     public UnitOfWork(
         HRDbContext context,
@@ -23,7 +24,8 @@ public class UnitOfWork : IUnitOfWork
         IGenericRepository<Contract> contracts,
         IGenericRepository<Payroll> payrolls,
         IGenericRepository<Candidate> candidates,
-        IGenericRepository<ApplicationProcess> applicationProcesses)
+        IGenericRepository<ApplicationProcess> applicationProcesses,
+        IGenericRepository<Recruitment> recruitments)
     {
         _context = context;
         Employees = employees;
@@ -32,6 +34,7 @@ public class UnitOfWork : IUnitOfWork
         Payrolls = payrolls;
         Candidates = candidates;
         ApplicationProcesses = applicationProcesses;
+        Recruitments = recruitments;
     }
 
     public async Task<int> SaveChangesAsync()

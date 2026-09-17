@@ -12,5 +12,8 @@ public class MappingProfile : Profile
         CreateMap<Attendance, AttendanceDTO>().ReverseMap();
         CreateMap<Contract, ContractDTO>().ReverseMap();
         CreateMap<Payroll, PayrollDTO>().ReverseMap();
+        CreateMap<Candidate, CandidateDTO>().ReverseMap();
+        CreateMap<Recruitment, RecruitmentDTO>().ReverseMap();
+        CreateMap<ApplicationProcess, ApplicationProcessDTO>().ReverseMap();
     }
 }
