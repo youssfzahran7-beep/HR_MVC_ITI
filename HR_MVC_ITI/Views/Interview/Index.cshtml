@@ -1,0 +1,44 @@
+﻿
+@model IEnumerable<HR_MVC_ITI.ViewModels.InterviewViewModel>
+
+@{
+    ViewData["Title"] = "List Interview";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Table Interview</h2>
+        <a asp-action="Create" class="btn btn-primary"> Add interview</a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Name :</th>
+                <th>Date : </th>
+                <th>Feed Back:</th>
+                <th>Operation :</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ApplicantionName</td>
+                    <td>@item.InterviewDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@item.FeedBack</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" 
+                            onsubmit="return confirm('Do You Sure you want Delete ?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

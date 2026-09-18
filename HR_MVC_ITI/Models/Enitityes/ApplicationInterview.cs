@@ -1,8 +1,8 @@
 using System;
 using HR_MVC_ITI.Models.Enumes;
+using HR_MVC_ITI.ViewModels;
 
 namespace HR_MVC_ITI.Models.Enitityes;
-
 public class ApplicationInterview
 {
     public int Id { get; set; }

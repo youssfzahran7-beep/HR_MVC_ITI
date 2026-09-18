@@ -58,13 +58,13 @@
                                     </td>
 
                                     <td>
-                                        @if (recruitment.Status == "Open")
+                                        @if (recruitment.Status.ToString() == "Open")
                                         {
                                             <span class="badge bg-success">
                                                 Open
                                             </span>
                                         }
-                                        else if (recruitment.Status == "Paused")
+                                        else if (recruitment.Status.ToString() == "Paused")
                                         {
                                             <span class="badge bg-warning text-dark">
                                                 Paused

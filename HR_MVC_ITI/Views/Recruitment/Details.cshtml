@@ -76,19 +76,13 @@
 
                             <p>
                                 <strong>Job ID:</strong>
-                                @Model.Id
-                            </p>
-
-                            <p>
-                                <strong>Status:</strong>
-
-                                @if (Model.Status == "Open")
-                                {
-                                    <span class="badge bg-success">
-                                        Open
+                                @Model.Id.ToString()</p>
+                            <p> <strong>Status:</strong>@if (Model.Status.ToString() == "Open")
+                                { <span class="badge bg-success">
+                 Open
                                     </span>
                                 }
-                                else if (Model.Status == "Paused")
+                                else if (Model.Status.ToString() == "Paused")
                                 {
                                     <span class="badge bg-warning text-dark">
                                         Paused
