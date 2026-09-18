@@ -4,6 +4,8 @@ namespace HR_MVC_ITI.Models.IRepository;
 
 public interface IUnitOfWork : IDisposable
 {
+    IGenericRepository<ApplicationInterview> Interviews { get; }
+    IGenericRepository<ApplicationOffer> Offers { get; }
     IGenericRepository<Employee> Employees { get; }
     IGenericRepository<Attendance> Attendances { get; }
     IGenericRepository<Contract> Contracts { get; }
