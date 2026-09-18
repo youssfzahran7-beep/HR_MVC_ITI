@@ -1,0 +1,22 @@
+﻿@model HR_MVC_ITI.Models.Enitityes.Contract
+@{
+    ViewData["Title"] = "Create Contract";
+}
+<div class="Container mt-4">
+    <h2>Create Contract</h2>
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label class="form-label">ID:</label>
+            <input asp-for="EmployeeId" class="form-Control" type="number" />
+            <span asp-validation-for="EmployeeId" class="text-info"></span>
+        </div>
+         <div class="mb-3">
+            <label class="form-label">Salary:</label>
+            <input asp-for="BasicSalary" class="form-Control" type="number" />
+            <span asp-validation-for="BasicSalary" class="text-info"></span>
+        </div>
+        
+        <button type="submit" class="btn btn-Success">Save</button>
+        <a asp-action="Index" class="btn btn-Success ms-2">Exit </a>
+    </form>
+</div>

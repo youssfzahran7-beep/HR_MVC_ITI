@@ -1,0 +1,38 @@
+﻿@model HR_MVC_ITI.ViewModels.OfferViewModel
+
+@{
+    ViewData["Title"] = "Edit offer";
+}
+
+<div class="container mt-4">
+    <h2>  Edit number : @Model.Id</h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="ApplicationProcessId" class="form-label"></label>
+            <input asp-for="ApplicationProcessId" class="form-control" type="number" />
+            <span asp-validation-for="ApplicationProcessId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="BasicSalaryOffer" class="form-label"></label>
+            <input asp-for="BasicSalaryOffer" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="BasicSalaryOffer" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status" asp-items="Html.GetEnumSelectList<HR_MVC_ITI.Models.Enumes.OfferStatus>()" class="form-select"></select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-warning">update Data </button>
+        <a asp-action="Index" class="btn btn-secondary">Exit</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

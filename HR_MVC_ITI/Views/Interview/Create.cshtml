@@ -1,0 +1,31 @@
+﻿@model HR_MVC_ITI.ViewModels.InterviewViewModel
+
+@{
+    ViewData["Title"] = "Create Interview";
+}
+
+<div class="container mt-4">
+    <h2> Table new Interview</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label asp-for="ApplicantionName" class="form-label">Name :</label>
+            <input asp-for="ApplicantionName" class="form-control" />
+            <span asp-validation-for="ApplicantionName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="InterviewDate" class="form-label">Date: </label>
+            <input asp-for="InterviewDate" class="form-control" type="datetime-local" />
+            <span asp-validation-for="InterviewDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FeedBack" class="form-label">FeedBack</label>
+            <textarea asp-for="FeedBack" class="form-control" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </form>
+</div>

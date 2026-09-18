@@ -11,9 +11,11 @@ public class UnitOfWork : IUnitOfWork
 
     public IGenericRepository<Employee> Employees { get; }
     public IGenericRepository<Attendance> Attendances { get; }
-    public IGenericRepository<Contract> Contracts { get; }
     public IGenericRepository<Payroll> Payrolls { get; }
     public IGenericRepository<Candidate> Candidates { get; }
+    public IGenericRepository<ApplicationInterview> Interviews { get; set; }
+    public IGenericRepository<ApplicationOffer> Offers { get; }
+    public IGenericRepository<Contract> Contracts { get; }
     public IGenericRepository<ApplicationProcess> ApplicationProcesses { get; }
     public IGenericRepository<Recruitment> Recruitments { get; }    
 
@@ -24,8 +26,8 @@ public class UnitOfWork : IUnitOfWork
         IGenericRepository<Contract> contracts,
         IGenericRepository<Payroll> payrolls,
         IGenericRepository<Candidate> candidates,
-        IGenericRepository<ApplicationProcess> applicationProcesses,
-        IGenericRepository<Recruitment> recruitments)
+        IGenericRepository<ApplicationInterview> Interviews,
+        IGenericRepository<ApplicationProcess> applicationProcesses)
     {
         _context = context;
         Employees = employees;
@@ -34,7 +36,15 @@ public class UnitOfWork : IUnitOfWork
         Payrolls = payrolls;
         Candidates = candidates;
         ApplicationProcesses = applicationProcesses;
-        Recruitments = recruitments;
+        Interviews = new GenericRepository<ApplicationInterview>(_context);
+        Offers = new GenericRepository<ApplicationOffer>(_context);
+    }
+    public interface IUnitOfWork : IDisposable
+    {
+        IGenericRepository<ApplicationInterview> Interviews { get; set; }
+        IGenericRepository<Contract> Contracts { get; set; }
+        IGenericRepository<ApplicationOffer> Offers { get; set; }
+        
     }
 
     public async Task<int> SaveChangesAsync()
