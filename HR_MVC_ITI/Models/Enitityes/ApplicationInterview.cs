@@ -9,7 +9,7 @@ public class ApplicationInterview
 
     public int ApplicationProcessId { get; set; }
 
-    public ApplicationProcess? ApplicationProcess { get; set; }
+    public virtual ApplicationProcess? ApplicationProcess { get; set; }
 
     public string InterviewerId { get; set; } = string.Empty;
 

@@ -17,6 +17,7 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<ApplicationOffer> Offers { get; }
     public IGenericRepository<Contract> Contracts { get; }
     public IGenericRepository<ApplicationProcess> ApplicationProcesses { get; }
+    public IGenericRepository<Recruitment> Recruitments { get; }    
 
     public UnitOfWork(
         HRDbContext context,

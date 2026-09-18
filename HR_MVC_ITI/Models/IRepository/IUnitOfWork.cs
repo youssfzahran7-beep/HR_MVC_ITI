@@ -12,6 +12,6 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<Payroll> Payrolls { get; }
     IGenericRepository<Candidate> Candidates { get; }
     IGenericRepository<ApplicationProcess> ApplicationProcesses { get; }
-
+    IGenericRepository<Recruitment> Recruitments { get; }
     Task<int> SaveChangesAsync();
 }

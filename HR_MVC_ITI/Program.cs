@@ -15,7 +15,7 @@ namespace HR_MVC_ITI
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<HRDbContext>(options =>
-                options.UseSqlServer(
+                options.UseLazyLoadingProxies().UseSqlServer(
                     builder.Configuration.GetConnectionString("HRConnection")));
                   //  sqlOptions => sqlOptions.EnableRetryOnFailure()));
 

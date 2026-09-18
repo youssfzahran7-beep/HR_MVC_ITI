@@ -1,83 +1,121 @@
-﻿using HR_MVC_ITI.Models.Enitityes;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using HR_MVC_ITI.DTOs;
+using HR_MVC_ITI.Models.Enitityes;
+using HR_MVC_ITI.Models.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HR_MVC_ITI.Controllers
+namespace HR_MVC_ITI.Controllers;
+
+public class CandidateController : Controller
 {
-    public class CandidateController : Controller
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+
+    public CandidateController(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        // 1. Displays the list of candidate profiles
-        [HttpGet]
-        public IActionResult Index()
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var candidates = await _unitOfWork.Candidates.GetAllAsync();
+        var candidateDtos = _mapper.Map<IEnumerable<CandidateDTO>>(candidates);
+        return View(candidateDtos);
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var candidate = await _unitOfWork.Candidates.GetByIdAsync(id);
+
+        if (candidate == null)
         {
-            return View();
+            return NotFound();
         }
+        var candidateDto = _mapper.Map<CandidateDTO>(candidate);
+        return View(candidateDto);
+    }
 
-        // 2. Retrieves specific candidate profile details
-        //    along with their linked user account
-        [HttpGet]
-        public IActionResult Details(int id)
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CandidateDTO candidateDto)
+    {
+        if (ModelState.IsValid)
         {
-            return View();
-        }
+            var candidate = _mapper.Map<Candidate>(candidateDto);
 
-        // 3. Renders the candidate profile creation form
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // 4. Saves candidate profile information
-        //    and handles resume file upload
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Candidate candidate, IFormFile resumeFile)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(candidate);
-            }
-
-            // Resume file saving will be handled here
-            // when the data/file layer is connected.
-
-            // Candidate saving will be handled by the data-layer teammate.
+            await _unitOfWork.Candidates.AddAsync(candidate);
+            await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        // 5. Renders the edit form
-        [HttpGet]
-        public IActionResult Edit(int id)
+        return View(candidateDto);
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var candidate = await _unitOfWork.Candidates.GetByIdAsync(id);
+
+        if (candidate == null)
         {
-            return View();
+            return NotFound();
+        }
+        var candidateDto = _mapper.Map<CandidateDTO>(candidate);
+        return View(candidateDto);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, CandidateDTO candidateDto)
+    {
+        if (id != candidateDto.Id)
+        {
+            return BadRequest();
         }
 
-        // 6. Submits updates to candidate profile
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Candidate candidate, IFormFile? resumeFile)
+        if (ModelState.IsValid)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(candidate);
-            }
+            var candidate = _mapper.Map<Candidate>(candidateDto);
 
-            // Candidate updating will be handled by the data-layer teammate.
-            // Resume replacement will also be handled when connected.
+            await _unitOfWork.Candidates.UpdateAsync(candidate);
+            await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        // 7. Deletes a candidate profile
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            // Delete will be handled by the data-layer teammate.
+        return View(candidateDto);
+    }
 
-            return RedirectToAction(nameof(Index));
+    public async Task<IActionResult> Delete(int id)
+    {
+        var candidate = await _unitOfWork.Candidates.GetByIdAsync(id);
+
+        if (candidate == null)
+        {
+            return NotFound();
         }
+        var candidateDto = _mapper.Map<CandidateDTO>(candidate);
+        return View(candidateDto);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var candidate = await _unitOfWork.Candidates.GetByIdAsync(id);
+
+        if (candidate != null)
+        {
+            _unitOfWork.Candidates.Delete(candidate);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 }
