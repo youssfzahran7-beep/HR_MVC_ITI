@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using HR_MVC_ITI.DTOs;
+using AutoMapper;
 using HR_MVC_ITI.Models.Enitityes;
 using HR_MVC_ITI.Models.IRepository;
+using HR_MVC_ITI.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HR_MVC_ITI.Controllers;
@@ -20,8 +20,8 @@ public class RecruitmentController : Controller
     public async Task<IActionResult> Index()
     {
         var recruitments = await _unitOfWork.Recruitments.GetAllAsync();
-        var recruitmentDtos = _mapper.Map<IEnumerable<RecruitmentDTO>>(recruitments);
-        return View(recruitmentDtos);
+        var recruitmentViewModels = _mapper.Map<IEnumerable<RecruitmentViewModel>>(recruitments);
+        return View(recruitmentViewModels);
     }
 
     public async Task<IActionResult> Details(int id)
@@ -32,8 +32,9 @@ public class RecruitmentController : Controller
         {
             return NotFound();
         }
-        var recruitmentDto = _mapper.Map<RecruitmentDTO>(recruitment);
-        return View(recruitmentDto  );
+
+        var recruitmentViewModel = _mapper.Map<RecruitmentViewModel>(recruitment);
+        return View(recruitmentViewModel);
     }
 
     public IActionResult Create()
@@ -43,18 +44,18 @@ public class RecruitmentController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(RecruitmentDTO recruitmentDto)
+    public async Task<IActionResult> Create(RecruitmentViewModel recruitmentViewModel)
     {
         if (ModelState.IsValid)
         {
-            var recruitment = _mapper.Map<Recruitment>(recruitmentDto);
+            var recruitment = _mapper.Map<Recruitment>(recruitmentViewModel);
             await _unitOfWork.Recruitments.AddAsync(recruitment);
             await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        return View(recruitmentDto);
+        return View(recruitmentViewModel);
     }
 
     public async Task<IActionResult> Edit(int id)
@@ -65,29 +66,30 @@ public class RecruitmentController : Controller
         {
             return NotFound();
         }
-        var recruitmentDto = _mapper.Map<RecruitmentDTO>(recruitment);
-        return View(recruitmentDto);
+
+        var recruitmentViewModel = _mapper.Map<RecruitmentViewModel>(recruitment);
+        return View(recruitmentViewModel);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, RecruitmentDTO recruitmentDto)
+    public async Task<IActionResult> Edit(int id, RecruitmentViewModel recruitmentViewModel)
     {
-        if (id != recruitmentDto.Id)
+        if (id != recruitmentViewModel.Id)
         {
             return BadRequest();
         }
 
         if (ModelState.IsValid)
         {
-            var recruitment = _mapper.Map<Recruitment>(recruitmentDto);
+            var recruitment = _mapper.Map<Recruitment>(recruitmentViewModel);
             await _unitOfWork.Recruitments.UpdateAsync(recruitment);
             await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        return View(recruitmentDto);
+        return View(recruitmentViewModel);
     }
 
     public async Task<IActionResult> Delete(int id)
@@ -98,8 +100,9 @@ public class RecruitmentController : Controller
         {
             return NotFound();
         }
-        var recruitmentDto = _mapper.Map<RecruitmentDTO>(recruitment);
-        return View(recruitmentDto);
+
+        var recruitmentViewModel = _mapper.Map<RecruitmentViewModel>(recruitment);
+        return View(recruitmentViewModel);
     }
 
     [HttpPost, ActionName("Delete")]
@@ -116,4 +119,4 @@ public class RecruitmentController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-} 
+}

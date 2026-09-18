@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using HR_MVC_ITI.DTOs;
+using AutoMapper;
 using HR_MVC_ITI.Models.Enitityes;
 using HR_MVC_ITI.Models.IRepository;
+using HR_MVC_ITI.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HR_MVC_ITI.Controllers;
@@ -20,8 +20,8 @@ public class CandidateController : Controller
     public async Task<IActionResult> Index()
     {
         var candidates = await _unitOfWork.Candidates.GetAllAsync();
-        var candidateDtos = _mapper.Map<IEnumerable<CandidateDTO>>(candidates);
-        return View(candidateDtos);
+        var candidateViewModels = _mapper.Map<IEnumerable<CandidateViewModel>>(candidates);
+        return View(candidateViewModels);
     }
 
     public async Task<IActionResult> Details(int id)
@@ -32,8 +32,9 @@ public class CandidateController : Controller
         {
             return NotFound();
         }
-        var candidateDto = _mapper.Map<CandidateDTO>(candidate);
-        return View(candidateDto);
+
+        var candidateViewModel = _mapper.Map<CandidateViewModel>(candidate);
+        return View(candidateViewModel);
     }
 
     public IActionResult Create()
@@ -43,19 +44,18 @@ public class CandidateController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CandidateDTO candidateDto)
+    public async Task<IActionResult> Create(CandidateViewModel candidateViewModel)
     {
         if (ModelState.IsValid)
         {
-            var candidate = _mapper.Map<Candidate>(candidateDto);
-
+            var candidate = _mapper.Map<Candidate>(candidateViewModel);
             await _unitOfWork.Candidates.AddAsync(candidate);
             await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        return View(candidateDto);
+        return View(candidateViewModel);
     }
 
     public async Task<IActionResult> Edit(int id)
@@ -66,30 +66,30 @@ public class CandidateController : Controller
         {
             return NotFound();
         }
-        var candidateDto = _mapper.Map<CandidateDTO>(candidate);
-        return View(candidateDto);
+
+        var candidateViewModel = _mapper.Map<CandidateViewModel>(candidate);
+        return View(candidateViewModel);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CandidateDTO candidateDto)
+    public async Task<IActionResult> Edit(int id, CandidateViewModel candidateViewModel)
     {
-        if (id != candidateDto.Id)
+        if (id != candidateViewModel.Id)
         {
             return BadRequest();
         }
 
         if (ModelState.IsValid)
         {
-            var candidate = _mapper.Map<Candidate>(candidateDto);
-
+            var candidate = _mapper.Map<Candidate>(candidateViewModel);
             await _unitOfWork.Candidates.UpdateAsync(candidate);
             await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        return View(candidateDto);
+        return View(candidateViewModel);
     }
 
     public async Task<IActionResult> Delete(int id)
@@ -100,8 +100,9 @@ public class CandidateController : Controller
         {
             return NotFound();
         }
-        var candidateDto = _mapper.Map<CandidateDTO>(candidate);
-        return View(candidateDto);
+
+        var candidateViewModel = _mapper.Map<CandidateViewModel>(candidate);
+        return View(candidateViewModel);
     }
 
     [HttpPost, ActionName("Delete")]

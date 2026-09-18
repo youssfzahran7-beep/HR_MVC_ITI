@@ -1,4 +1,4 @@
-﻿@model HR_MVC_ITI.DTOs.ApplicationProcessDTO
+﻿@model HR_MVC_ITI.Models.ViewModels.ApplicationProcessViewModel
 @{
     ViewData["Title"] = "Apply for Job";
 }
@@ -30,8 +30,7 @@
                     Candidate
                 </label>
 
-                <input asp-for="CandidateId"
-                       class="form-control" />
+                <select asp-for="CandidateId" asp-items="ViewBag.Candidates" class="form-select"><option value="">-- Select candidate --</option></select>
 
                 <span asp-validation-for="CandidateId"
                       class="text-danger">
@@ -47,8 +46,7 @@
                     Job
                 </label>
 
-                <input asp-for="RecruitmentId"
-                       class="form-control" />
+                <select asp-for="RecruitmentId" asp-items="ViewBag.Requirements" class="form-select"><option value="">-- Select requirement --</option></select>
 
                 <span asp-validation-for="RecruitmentId"
                       class="text-danger">

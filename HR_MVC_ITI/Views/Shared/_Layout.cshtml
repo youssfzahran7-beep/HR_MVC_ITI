@@ -63,17 +63,67 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
+                        <a class="nav-link" asp-controller="JobApply" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-paper-plane"></i></div>
+                            Job Apply
+                        </a>
                         <div class="sb-sidenav-menu-heading">Navigation</div>
                         @if (User.IsInRole("HR"))
                         {
-                            <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Index">
-                                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
-                                Employees
-                            </a>
-                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="AddUser">
-                                <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
-                                Create employee user
-                            </a>
+                        <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            Employees
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="Account" asp-action="AddUser">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                            Create employee user
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="ApplicationProcess" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
+                            Application Process
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="Attendance" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-calendar-check"></i></div>
+                            Attendance
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="Candidate" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-tie"></i></div>
+                            Candidates
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="Contract" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-signature"></i></div>
+                            Contracts
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="Interview" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-comments"></i></div>
+                            Interviews
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="JobApply" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-briefcase"></i></div>
+                            Job Applies
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="Offer" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-handshake"></i></div>
+                            Offers
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="Payroll" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-money-bill-wave"></i></div>
+                            Payroll
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="Recruitment" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
+                            Recruitment
+                        </a>
+                        <a class="nav-link" asp-area="" asp-controller="WorkSchedule" asp-action="Index">
+                            <div class="sb-nav-link-icon"><i class="fas fa-clock"></i></div>
+                            Work Schedule
+                        </a>
+                        }
+                        @if (User.IsInRole("Employee"))
+                        {
+                            <div class="sb-sidenav-menu-heading">My Workspace</div>
+                            <a class="nav-link" asp-controller="Attendance" asp-action="MyAttendance"><div class="sb-nav-link-icon"><i class="fas fa-clock"></i></div>My Attendance</a>
+                            <a class="nav-link" asp-controller="Payroll" asp-action="Index"><div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>My Payroll</a>
                         }
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
                             <div class="sb-nav-link-icon"><i class="fas fa-shield-alt"></i></div>

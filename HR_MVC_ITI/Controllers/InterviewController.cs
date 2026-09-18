@@ -1,4 +1,4 @@
-﻿ using AutoMapper;
+ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using HR_MVC_ITI.ViewModels;
 using HR_MVC_ITI.Models.Enitityes;
@@ -102,7 +102,7 @@ namespace HR_MVC_ITI.Controllers
                 }
 
                 _mapper.Map(interviewVm, existingInterview);
-                _unitOfWork.Interviews.UpdateAsync(existingInterview);
+                await _unitOfWork.Interviews.UpdateAsync(existingInterview);
                 await _unitOfWork.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));

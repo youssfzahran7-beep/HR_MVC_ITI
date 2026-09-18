@@ -1,22 +1,47 @@
-﻿<form method="get" action="/Attendance/SaveAttendance" class="form-control">
-    <label>Employee Name</label>
-    <select name="employeename" class="form-control">
-        @foreach(var em in Model)
-            {
-                <option>@em.FullName</option>
-            }
-        </select>
-   <label>Date</label>
-   <input type="datetime" name="date" />
-   <label>Check in Time</label>
-   <input type="datetime" name=" checkintime" />
-    <label>Check out Time</label>
-    <input type="datetime" name=" checkouttime" />
-    <label>Late Minutes</label>
-    <input type="number" name=" lateminutes" />
-    <label>Overtime Hours</label>
-    <input type="number" name="overtimehours"
+@model IEnumerable<HR_MVC_ITI.Models.ViewModels.EmployeeViewModel>
 
-    <input type="submit" class="btn-success" />
-</form>
-<a href="/Attendance/GetAll">Backtotable</a>/;;
+@{
+    ViewData["Title"] = "Attendance - Check In";
+}
+
+<h1 class="mt-4">Attendance Check In</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Select an employee to check in</li>
+</ol>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-users me-1"></i>Employees
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Employee Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var emp in Model)
+                {
+                    <tr>
+                        <td>@emp.Id</td>
+                        <td>@emp.FullName</td>
+                        <td>
+                            <a asp-action="AddAttendance" asp-route-id="@emp.Id" class="btn btn-sm btn-success">
+                                <i class="fas fa-sign-in-alt me-1"></i>Check In
+                            </a>
+                            <a asp-action="CheckOut" asp-route-id="@emp.Id" class="btn btn-sm btn-warning">
+                                <i class="fas fa-sign-out-alt me-1"></i>Check Out
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-action="GetAll" class="btn btn-primary mt-3">
+            <i class="fas fa-list me-1"></i>View All Attendance Records
+        </a>
+    </div>
+</div>

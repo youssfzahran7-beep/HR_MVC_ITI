@@ -137,6 +137,22 @@ public class EmployeeController : Controller
 
         if (employee != null)
         {
+            // Delete related records first (FK = NoAction)
+            var attendances = (await _unitOfWork.Attendances.GetAllAsync())
+                .Where(a => a.EmployeeId == id).ToList();
+            foreach (var a in attendances)
+                _unitOfWork.Attendances.Delete(a);
+
+            var payrolls = (await _unitOfWork.Payrolls.GetAllAsync())
+                .Where(p => p.EmployeeId == id).ToList();
+            foreach (var p in payrolls)
+                _unitOfWork.Payrolls.Delete(p);
+
+            var contracts = (await _unitOfWork.Contracts.GetAllAsync())
+                .Where(c => c.EmployeeId == id).ToList();
+            foreach (var c in contracts)
+                _unitOfWork.Contracts.Delete(c);
+
             _unitOfWork.Employees.Delete(employee);
             await _unitOfWork.SaveChangesAsync();
         }

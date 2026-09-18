@@ -18,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<Contract> Contracts { get; }
     public IGenericRepository<ApplicationProcess> ApplicationProcesses { get; }
     public IGenericRepository<Recruitment> Recruitments { get; }    
+    public IGenericRepository<WorkSchedule> WorkSchedules { get; }
 
     public UnitOfWork(
         HRDbContext context,
@@ -26,8 +27,9 @@ public class UnitOfWork : IUnitOfWork
         IGenericRepository<Contract> contracts,
         IGenericRepository<Payroll> payrolls,
         IGenericRepository<Candidate> candidates,
-        IGenericRepository<ApplicationInterview> Interviews,
-        IGenericRepository<ApplicationProcess> applicationProcesses)
+        IGenericRepository<ApplicationProcess> applicationProcesses,
+        IGenericRepository<Recruitment> recruitments,
+        IGenericRepository<WorkSchedule> workSchedules)
     {
         _context = context;
         Employees = employees;
@@ -36,17 +38,11 @@ public class UnitOfWork : IUnitOfWork
         Payrolls = payrolls;
         Candidates = candidates;
         ApplicationProcesses = applicationProcesses;
+        Recruitments = recruitments;
+        WorkSchedules = workSchedules;
         Interviews = new GenericRepository<ApplicationInterview>(_context);
         Offers = new GenericRepository<ApplicationOffer>(_context);
     }
-    public interface IUnitOfWork : IDisposable
-    {
-        IGenericRepository<ApplicationInterview> Interviews { get; set; }
-        IGenericRepository<Contract> Contracts { get; set; }
-        IGenericRepository<ApplicationOffer> Offers { get; set; }
-        
-    }
-
     public async Task<int> SaveChangesAsync()
     {
         return await _context.SaveChangesAsync();

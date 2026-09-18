@@ -13,5 +13,6 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<Candidate> Candidates { get; }
     IGenericRepository<ApplicationProcess> ApplicationProcesses { get; }
     IGenericRepository<Recruitment> Recruitments { get; }
+    IGenericRepository<WorkSchedule> WorkSchedules { get; }
     Task<int> SaveChangesAsync();
 }

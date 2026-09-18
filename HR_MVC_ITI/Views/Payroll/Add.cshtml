@@ -1,22 +1,58 @@
-﻿<form method="get" action="/Payroll/SavePayroll" class="form-control">
-    <label>Employee Name</label>
-    <select name="employeename" class="form-control">
-        @foreach (var em in Model)
-        {
-            <option>@em.FullName</option>
-        }
-    </select>
-    <label>Month</label>
-    <input type="number" name="month" />
-    <label>year</label>
-    <input type="number" name=" year" />
-    <label>Basic Salary</label>
-    <input type="number" name="basicsalary" />
-    <label>Late Deductions</label>
-    <input type="number" name=" latedeductions" />
-    <label>Overtime Additions</label>
-    <input type="number" name="overtimeadditions"
+@model HR_MVC_ITI.Models.ViewModels.PayrollViewModel
 
-    <input type="submit" class="btn-success" />
+@{
+    ViewData["Title"] = "Add Payroll";
+}
+
+<h1>Add Payroll</h1>
+
+<form asp-action="SavePayroll" method="post" class="card card-body">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="EmployeeId" class="form-label">Employee Name</label>
+        <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="form-select">
+            <option value="">-- Select employee --</option>
+        </select>
+        <span asp-validation-for="EmployeeId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Month" class="form-label"></label>
+        <input asp-for="Month" class="form-control" />
+        <span asp-validation-for="Month" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Year" class="form-label"></label>
+        <input asp-for="Year" class="form-control" />
+        <span asp-validation-for="Year" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BasicSalary" class="form-label"></label>
+        <input asp-for="BasicSalary" class="form-control" />
+        <span asp-validation-for="BasicSalary" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LateDeductions" class="form-label"></label>
+        <input asp-for="LateDeductions" class="form-control" />
+        <span asp-validation-for="LateDeductions" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="OvertimeAdditions" class="form-label"></label>
+        <input asp-for="OvertimeAdditions" class="form-control" />
+        <span asp-validation-for="OvertimeAdditions" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="GetAll" class="btn btn-secondary">Back to table</a>
 </form>
-<a href="/Payroll/GetAll">Backtotable</a>/;;
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,4 +1,4 @@
-﻿    using AutoMapper;
+    using AutoMapper;
     using global::HR_MVC_ITI.Models.IRepository;
     using global::HR_MVC_ITI.Models.ViewModels;
     using HR_MVC_ITI.Models.Enitityes;
@@ -81,7 +81,7 @@
                 if (existingContract == null) return NotFound();
 
                 _mapper.Map(contractVm, existingContract);
-                _unitOfWork.Contracts.UpdateAsync(existingContract);
+                await _unitOfWork.Contracts.UpdateAsync(existingContract);
                 await _unitOfWork.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));

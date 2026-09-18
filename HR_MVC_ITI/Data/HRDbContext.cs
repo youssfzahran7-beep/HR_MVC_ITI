@@ -19,6 +19,7 @@ public class HRDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<Recruitment> Recruitments { get; set; } = null!;
     public virtual DbSet<ApplicationInterview> ApplicationInterviews { get; set; } = null!;
     public virtual DbSet<ApplicationOffer> ApplicationOffers { get; set; } = null!;
+    public virtual DbSet<WorkSchedule> WorkSchedules { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

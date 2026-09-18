@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HR_MVC_ITI.Models.Enitityes;
 using HR_MVC_ITI.Models.Enumes;
 using HR_MVC_ITI.Models.IRepository;
@@ -95,7 +95,7 @@ namespace HR_MVC_ITI.Controllers
                 }
 
                 _mapper.Map(offerVm, existingOffer);
-                _unitOfWork.Offers.UpdateAsync(existingOffer);
+                await _unitOfWork.Offers.UpdateAsync(existingOffer);
                 await _unitOfWork.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));

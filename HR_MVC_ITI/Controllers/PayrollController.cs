@@ -1,74 +1,149 @@
-﻿using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using HR_MVC_ITI.Data;
 using HR_MVC_ITI.Models.Enitityes;
 using HR_MVC_ITI.Models.IRepository;
 using HR_MVC_ITI.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
-namespace HR_MVC_ITI.Controllers
+
+namespace HR_MVC_ITI.Controllers;
+
+[Authorize(Roles = "HR")]
+public class PayrollController : Controller
 {
-    [Authorize(Roles = "HR")]
-    public class PayrollController : Controller
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+
+    public PayrollController(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        HRDbContext C;
-        public PayrollController(HRDbContext c)
-        {
-            C = c;
-        }
-        public IActionResult Add()
-        {
-            var employees = C.Employees.ToList();
-            return View("Add", employees);
-        }
-        public IActionResult SavePayroll(string employeename, int month,int year, decimal basicsalary,decimal latedeductions, decimal overtimeadditions)
-        {
-            Employee em = C.Employees.First(c => c.FullName == employeename);
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
 
-            Payroll a = new Payroll() { EmployeeId = em.Id,Month = month, Year=year, BasicSalary=basicsalary, LateDeductions=latedeductions, OvertimeAdditions=overtimeadditions };
-            C.Add(a);
-            C.SaveChanges();
-            return View("GetAll", C.Payrolls.ToList());
-        }
-        public IActionResult GetAll()
+    public IActionResult Index()
+    {
+        return RedirectToAction(nameof(GetAll));
+    }
+
+    public async Task<IActionResult> GetAll()
+    {
+        var payrolls = await _unitOfWork.Payrolls.GetAllAsync();
+        var payrollViewModels = _mapper.Map<List<PayrollViewModel>>(payrolls);
+        await PopulateEmployeeNames(payrollViewModels);
+
+        return View(payrollViewModels);
+    }
+
+    public async Task<IActionResult> Add()
+    {
+        await LoadEmployees();
+        return View(new PayrollViewModel
         {
-            var payrolls = C.Payrolls.ToList();
-            return View("GetAll", payrolls);
-        }
-        public IActionResult Update(int id)
+            Month = DateTime.Today.Month,
+            Year = DateTime.Today.Year
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SavePayroll(PayrollViewModel payrollViewModel)
+    {
+        if (!ModelState.IsValid)
         {
-            var employees = C.Employees.ToList();
-            ViewBag.Id = id;
-            return View("Update", employees);
-        }
-        public IActionResult SaveUpdatedPayroll(int id, string employeename, int month, int year, decimal basicsalary, decimal latedeductions, decimal overtimeadditions)
-        {
-            Payroll I = C.Payrolls.First(e => e.Id == id);
-            Employee em = C.Employees.First(c => c.FullName == employeename);
-            I.EmployeeId = em.Id;
-            I.Month = month;
-            I.Year = year;
-            I.BasicSalary = basicsalary;
-            I.LateDeductions = latedeductions;
-            I.OvertimeAdditions = overtimeadditions;
-            return View("GetAll", C.Payrolls.ToList());
-        }
-        public IActionResult Delete(int id)
-        {
-            Payroll a = C.Payrolls.First(c => c.Id == id);
-            C.Remove(a);
-            C.SaveChanges();
-            return View("GetAll", C.Payrolls.ToList());
+            await LoadEmployees(payrollViewModel.EmployeeId);
+            return View("Add", payrollViewModel);
         }
 
-        public IActionResult Index()
+        var payroll = _mapper.Map<Payroll>(payrollViewModel);
+        await _unitOfWork.Payrolls.AddAsync(payroll);
+        await _unitOfWork.SaveChangesAsync();
+
+        return RedirectToAction(nameof(GetAll));
+    }
+
+    public async Task<IActionResult> Update(int id)
+    {
+        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id);
+
+        if (payroll == null)
         {
-            return View();
+            return NotFound();
+        }
+
+        var payrollViewModel = _mapper.Map<PayrollViewModel>(payroll);
+        await LoadEmployees(payrollViewModel.EmployeeId);
+
+        return View(payrollViewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveUpdatedPayroll(int id, PayrollViewModel payrollViewModel)
+    {
+        if (id != payrollViewModel.Id)
+        {
+            return BadRequest();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await LoadEmployees(payrollViewModel.EmployeeId);
+            return View("Update", payrollViewModel);
+        }
+
+        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id);
+
+        if (payroll == null)
+        {
+            return NotFound();
+        }
+
+        payroll.EmployeeId = payrollViewModel.EmployeeId;
+        payroll.Month = payrollViewModel.Month;
+        payroll.Year = payrollViewModel.Year;
+        payroll.BasicSalary = payrollViewModel.BasicSalary;
+        payroll.LateDeductions = payrollViewModel.LateDeductions;
+        payroll.OvertimeAdditions = payrollViewModel.OvertimeAdditions;
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return RedirectToAction(nameof(GetAll));
+    }
+
+    public async Task<IActionResult> Delete(int id)
+    {
+        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id);
+
+        if (payroll == null)
+        {
+            return NotFound();
+        }
+
+        _unitOfWork.Payrolls.Delete(payroll);
+        await _unitOfWork.SaveChangesAsync();
+
+        return RedirectToAction(nameof(GetAll));
+    }
+
+    private async Task LoadEmployees(int? selectedEmployeeId = null)
+    {
+        var employees = await _unitOfWork.Employees.GetAllAsync();
+
+        ViewBag.Employees = new SelectList(
+            employees.Select(employee => new { employee.Id, employee.FullName }),
+            "Id",
+            "FullName",
+            selectedEmployeeId);
+    }
+
+    private async Task PopulateEmployeeNames(IEnumerable<PayrollViewModel> payrolls)
+    {
+        var employees = (await _unitOfWork.Employees.GetAllAsync())
+            .ToDictionary(employee => employee.Id, employee => employee.FullName);
+
+        foreach (var payroll in payrolls)
+        {
+            payroll.EmployeeName = employees.GetValueOrDefault(payroll.EmployeeId, "Unknown employee");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model HR_MVC_ITI.DTOs.ApplicationProcessDTO
+﻿@model HR_MVC_ITI.Models.ViewModels.ApplicationProcessViewModel
 @{
     ViewData["Title"] = "Application Details";
 }
@@ -30,7 +30,7 @@
             </dt>
 
             <dd class="col-sm-9">
-                Candidate #@Model.CandidateId
+                @Model.CandidateName
             </dd>
 
 
@@ -39,7 +39,7 @@
             </dt>
 
             <dd class="col-sm-9">
-                Job #@Model.RecruitmentId
+                @Model.RequirementTitle
             </dd>
 
 

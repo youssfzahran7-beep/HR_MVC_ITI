@@ -1,4 +1,4 @@
-﻿@model IEnumerable<HR_MVC_ITI.DTOs.ApplicationProcessDTO>
+﻿@model IEnumerable<HR_MVC_ITI.Models.ViewModels.ApplicationProcessViewModel>
 @{
     ViewData["Title"] = "Application Pipeline";
 }
@@ -50,12 +50,12 @@
 
                                 <!-- Candidate -->
                                 <td>
-                                    Candidate #@application.CandidateId
+                                    @application.CandidateName
                                 </td>
 
                                 <!-- Recruitment / Job -->
                                 <td>
-                                    Job #@application.RecruitmentId
+                                    @application.RequirementTitle
                                 </td>
 
                                 <!-- Applied Date -->

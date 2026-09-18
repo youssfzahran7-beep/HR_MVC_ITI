@@ -10,6 +10,9 @@ public class PayrollViewModel
     [Display(Name = "Employee ID")]
     public int EmployeeId { get; set; }
 
+    [Display(Name = "Employee Name")]
+    public string EmployeeName { get; set; } = string.Empty;
+
     [Required]
     [Range(1, 12)]
     public int Month { get; set; }

@@ -1,31 +1,62 @@
 @model List<HR_MVC_ITI.Models.ViewModels.AttendanceViewModel>
 
 @{
-    ViewData["Title"] = "All Attendance Records";
-    var employeeNames = ViewBag.EmployeeNames as Dictionary<int, string> ?? new Dictionary<int, string>();
+    ViewData["Title"] = "My Attendance";
+    var employeeName = ViewBag.EmployeeName as string ?? "Employee";
+    var employeeId = (int)(ViewBag.EmployeeId ?? 0);
+    bool hasOpenCheckIn = ViewBag.HasOpenCheckIn ?? false;
+    bool alreadyCheckedIn = ViewBag.AlreadyCheckedIn ?? false;
 }
 
-<h1 class="mt-4">Attendance Records</h1>
+<h1 class="mt-4">My Attendance</h1>
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item"><a asp-action="Index">Attendance</a></li>
-    <li class="breadcrumb-item active">All Records</li>
+    <li class="breadcrumb-item active">Welcome, @employeeName</li>
 </ol>
 
+<!-- Check In / Check Out Buttons -->
 <div class="card mb-4">
     <div class="card-header">
-        <i class="fas fa-calendar-check me-1"></i>All Attendance Records
+        <i class="fas fa-clock me-1"></i>Today's Actions
+    </div>
+    <div class="card-body d-flex gap-3">
+        @if (!alreadyCheckedIn)
+        {
+            <a asp-action="MyCheckIn" class="btn btn-success btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Check In
+            </a>
+        }
+        else if (hasOpenCheckIn)
+        {
+            <span class="btn btn-secondary btn-lg disabled">
+                <i class="fas fa-check me-2"></i>Already Checked In ✓
+            </span>
+            <a asp-action="MyCheckOut" class="btn btn-warning btn-lg">
+                <i class="fas fa-sign-out-alt me-2"></i>Check Out
+            </a>
+        }
+        else
+        {
+            <span class="btn btn-secondary btn-lg disabled">
+                <i class="fas fa-check-double me-2"></i>Done for today ✓
+            </span>
+        }
+    </div>
+</div>
+
+<!-- Attendance History -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-calendar-check me-1"></i>My Attendance History
     </div>
     <div class="card-body">
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Employee</th>
                     <th>Date</th>
                     <th>Check In</th>
                     <th>Check Out</th>
-                    <th>Late Minutes</th>
-                    <th>Overtime Hours</th>
+                    <th>Late</th>
+                    <th>Overtime</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,8 +65,6 @@
                     @foreach (var attendance in Model)
                     {
                         <tr>
-                            <td>@attendance.Id</td>
-                            <td>@(employeeNames.GetValueOrDefault(attendance.EmployeeId, "Unknown"))</td>
                             <td>@attendance.Date.ToString("yyyy-MM-dd")</td>
                             <td>@(attendance.CheckInTime?.ToString("hh:mm tt") ?? "-")</td>
                             <td>@(attendance.CheckOutTime?.ToString("hh:mm tt") ?? "-")</td>
@@ -65,7 +94,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-center">No attendance records found.</td>
+                        <td colspan="5" class="text-center">No attendance records yet.</td>
                     </tr>
                 }
             </tbody>

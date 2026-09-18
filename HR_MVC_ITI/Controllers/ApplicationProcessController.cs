@@ -1,10 +1,10 @@
-﻿using AutoMapper;
-using HR_MVC_ITI.DTOs;
+using AutoMapper;
 using HR_MVC_ITI.Models.Enitityes;
-using HR_MVC_ITI.Models.IRepository;
 using HR_MVC_ITI.Models.Enumes;
+using HR_MVC_ITI.Models.IRepository;
+using HR_MVC_ITI.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HR_MVC_ITI.Controllers;
 
@@ -13,7 +13,7 @@ public class ApplicationProcessController : Controller
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public ApplicationProcessController(IUnitOfWork unitOfWork, IMapper mapper  )
+    public ApplicationProcessController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -22,9 +22,11 @@ public class ApplicationProcessController : Controller
     public async Task<IActionResult> Index()
     {
         var applications = await _unitOfWork.ApplicationProcesses.GetAllAsync();
-        var applicationDtos = _mapper.Map<IEnumerable<ApplicationProcessDTO>>(applications);
-        return View(applicationDtos);
+        var applicationViewModels = _mapper.Map<List<ApplicationProcessViewModel>>(applications);
+        await Populate(applicationViewModels);
+        return View(applicationViewModels);
     }
+
     public async Task<IActionResult> Details(int id)
     {
         var application = await _unitOfWork.ApplicationProcesses.GetByIdAsync(id);
@@ -33,68 +35,64 @@ public class ApplicationProcessController : Controller
         {
             return NotFound();
         }
-        var applicationDto = _mapper.Map<ApplicationProcessDTO>(application);
-        return View(applicationDto);
+
+        var applicationViewModel = _mapper.Map<ApplicationProcessViewModel>(application);
+        await Populate(new[] { applicationViewModel });
+        return View(applicationViewModel);
     }
 
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        await Lists();
         return View();
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(ApplicationProcessDTO applicationDto)
+    public async Task<IActionResult> Create(ApplicationProcessViewModel applicationViewModel)
     {
         if (ModelState.IsValid)
         {
-            applicationDto.AppliedDate = DateTime.Now;
-            applicationDto.CurrentStage = ApplicationStage.Applied;
+            applicationViewModel.AppliedDate = DateTime.Now;
+            applicationViewModel.CurrentStage = ApplicationStage.Applied;
 
-            var applicationProcess =
-                _mapper.Map<ApplicationProcess>(applicationDto);
-
+            var applicationProcess = _mapper.Map<ApplicationProcess>(applicationViewModel);
             await _unitOfWork.ApplicationProcesses.AddAsync(applicationProcess);
             await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        return View(applicationDto);
+        await Lists(applicationViewModel.CandidateId, applicationViewModel.RecruitmentId);
+        return View(applicationViewModel);
     }
-
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(
-    int id,
-    ApplicationProcessDTO applicationDto)
+    public async Task<IActionResult> Edit(int id, ApplicationProcessViewModel applicationViewModel)
     {
-        if (id != applicationDto.Id)
+        if (id != applicationViewModel.Id)
         {
             return BadRequest();
         }
 
         if (ModelState.IsValid)
         {
-            var applicationProcess =
-                await _unitOfWork.ApplicationProcesses.GetByIdAsync(id);
+            var applicationProcess = await _unitOfWork.ApplicationProcesses.GetByIdAsync(id);
 
             if (applicationProcess == null)
             {
                 return NotFound();
             }
 
-            applicationProcess.CurrentStage = applicationDto.CurrentStage;
-
+            applicationProcess.CurrentStage = applicationViewModel.CurrentStage;
             await _unitOfWork.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        return View(applicationDto);
+        return View(applicationViewModel);
     }
-
 
     public async Task<IActionResult> Delete(int id)
     {
@@ -104,8 +102,9 @@ public class ApplicationProcessController : Controller
         {
             return NotFound();
         }
-        var applicationDto = _mapper.Map<ApplicationProcessDTO>(application);
-        return View(applicationDto );
+
+        var applicationViewModel = _mapper.Map<ApplicationProcessViewModel>(application);
+        return View(applicationViewModel);
     }
 
     [HttpPost, ActionName("Delete")]
@@ -121,5 +120,34 @@ public class ApplicationProcessController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task Lists(int? candidate = null, int? requirement = null)
+    {
+        var candidates = await _unitOfWork.Candidates.GetAllAsync();
+        var recruitments = await _unitOfWork.Recruitments.GetAllAsync();
+
+        ViewBag.Candidates = new SelectList(
+            candidates.Select(x => new { x.Id, Name = x.FirstName + " " + x.LastName }),
+            "Id",
+            "Name",
+            candidate);
+
+        ViewBag.Requirements = new SelectList(recruitments, "Id", "Title", requirement);
+    }
+
+    private async Task Populate(IEnumerable<ApplicationProcessViewModel> applications)
+    {
+        var candidates = (await _unitOfWork.Candidates.GetAllAsync())
+            .ToDictionary(x => x.Id, x => x.FirstName + " " + x.LastName);
+
+        var recruitments = (await _unitOfWork.Recruitments.GetAllAsync())
+            .ToDictionary(x => x.Id, x => x.Title);
+
+        foreach (var application in applications)
+        {
+            application.CandidateName = candidates.GetValueOrDefault(application.CandidateId, "Unknown candidate");
+            application.RequirementTitle = recruitments.GetValueOrDefault(application.RecruitmentId, "Unknown requirement");
+        }
     }
 }
