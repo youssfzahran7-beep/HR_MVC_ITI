@@ -1,0 +1,45 @@
+@model HR_MVC_ITI.Models.ViewModels.ContractViewModel
+
+@{
+    ViewData["Title"] = "Contract Details";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h4>Contract Details #@Model.Id</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Contract ID:</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Employee Name:</dt>
+                <dd class="col-sm-9">
+                    <strong>@(string.IsNullOrEmpty(Model.EmployeeName) ? $"Employee #{Model.EmployeeId}" : Model.EmployeeName)</strong>
+                </dd>
+
+                <dt class="col-sm-3">Basic Salary:</dt>
+                <dd class="col-sm-9"><strong>@Model.BasicSalary.ToString("C")</strong></dd>
+
+                <dt class="col-sm-3">Start Date:</dt>
+                <dd class="col-sm-9">@Model.StartDate.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-3">End Date:</dt>
+                <dd class="col-sm-9">@(Model.EndDate?.ToString("yyyy-MM-dd") ?? "Indefinite / Permanent")</dd>
+
+                <dt class="col-sm-3">Status:</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @(Model.Status == HR_MVC_ITI.Models.Enumes.ContractStatus.Activated ? "bg-success" :
+                                        Model.Status == HR_MVC_ITI.Models.Enumes.ContractStatus.Terminated ? "bg-danger" : "bg-warning text-dark")">
+                        @Model.Status
+                    </span>
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>

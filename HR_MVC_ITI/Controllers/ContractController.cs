@@ -1,115 +1,106 @@
-    using AutoMapper;
-    using global::HR_MVC_ITI.Models.IRepository;
-    using global::HR_MVC_ITI.Models.ViewModels;
-    using HR_MVC_ITI.Models.Enitityes;
-    using HR_MVC_ITI.ViewModels;
-    using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using HR_MVC_ITI.Models.Enitityes;
+using HR_MVC_ITI.Models.IRepository;
+using HR_MVC_ITI.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-    namespace HR_MVC_ITI.Controllers
+namespace HR_MVC_ITI.Controllers
+{
+    [Authorize(Roles = "HR")]
+    public class ContractController : Controller
     {
-        public class ContractController : Controller
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public ContractController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            private readonly IUnitOfWork _unitOfWork;
-            private readonly IMapper _mapper;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
 
-            public ContractController(IUnitOfWork unitOfWork, IMapper mapper)
+       
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var contracts = await _unitOfWork.Contracts.GetAllAsync(c => c.Employee!);
+            var contractVms = _mapper.Map<IEnumerable<ContractViewModel>>(contracts);
+            return View(contractVms);
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            var employees = await _unitOfWork.Employees.GetAllAsync();
+            ViewBag.Employees = new SelectList(employees, "Id", "FullName");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(ContractViewModel contractVm)
+        {
+            if (ModelState.IsValid)
             {
-                _unitOfWork = unitOfWork;
-                _mapper = mapper;
-            }
-
-            // GET: Display list of Contract
-            [HttpGet]
-            public async Task<IActionResult> Index()
-            {
-                var contracts = await _unitOfWork.Contracts.GetAllAsync();
-                var contractVms = _mapper.Map<IEnumerable<ContractViewModel>>(contracts);
-                return View(contractVms);
-            }
-
-            // GET: Retrieves Details of Contract
-            [HttpGet]
-            public async Task<IActionResult> Details(int id)
-            {
-                var contract = await _unitOfWork.Contracts.GetByIdAsync(id);
-                if (contract == null) return NotFound();
-
-                var contractVm = _mapper.Map<ContractViewModel>(contract);
-                return View(contractVm);
-            }
-
-            // GET: Render Create of Application Contract
-            [HttpGet]
-            public IActionResult Create()
-            {
-                return View();
-            }
-
-            // POST: Create Application Contract
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create(ContractViewModel contractVm)
-            {
-                if (!ModelState.IsValid) return View(contractVm);
-
-                var contractEntity = _mapper.Map<Contract>(contractVm);
-                await _unitOfWork.Contracts.AddAsync(contractEntity);
+                var contract = _mapper.Map<Contract>(contractVm);
+                await _unitOfWork.Contracts.AddAsync(contract);
                 await _unitOfWork.SaveChangesAsync();
-
                 return RedirectToAction(nameof(Index));
             }
+            var employees = await _unitOfWork.Employees.GetAllAsync();
+            ViewBag.Employees = new SelectList(employees, "Id", "FullName", contractVm.EmployeeId);
+            return View(contractVm);
+        }
 
-            // GET: Render Edit of Application contract
-            [HttpGet]
-            public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id)
+        {
+            var contract = await _unitOfWork.Contracts.GetByIdAsync(id, c => c.Employee!);
+            if (contract == null)
             {
-                var contract = await _unitOfWork.Contracts.GetByIdAsync(id);
-                if (contract == null) return NotFound();
-
-                var contractVm = _mapper.Map<ContractViewModel>(contract);
-                return View(contractVm);
+                return NotFound();
             }
+            var contractVm = _mapper.Map<ContractViewModel>(contract);
+            var employees = await _unitOfWork.Employees.GetAllAsync();
+            ViewBag.Employees = new SelectList(employees, "Id", "FullName", contractVm.EmployeeId);
+            return View(contractVm);
+        }
 
-            // POST: Edit Application contract
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(ContractViewModel contractVm)
+        [HttpPost]
+        public async Task<IActionResult> Edit(ContractViewModel contractVm)
+        {
+            if (ModelState.IsValid)
             {
-                if (!ModelState.IsValid) return View(contractVm);
-
-                var existingContract = await _unitOfWork.Contracts.GetByIdAsync(contractVm.Id);
-                if (existingContract == null) return NotFound();
-
-                _mapper.Map(contractVm, existingContract);
-                await _unitOfWork.Contracts.UpdateAsync(existingContract);
+                var contract = _mapper.Map<Contract>(contractVm);
+                await _unitOfWork.Contracts.UpdateAsync(contract);
                 await _unitOfWork.SaveChangesAsync();
-
                 return RedirectToAction(nameof(Index));
             }
+            var employees = await _unitOfWork.Employees.GetAllAsync();
+            ViewBag.Employees = new SelectList(employees, "Id", "FullName", contractVm.EmployeeId);
+            return View(contractVm);
+        }
 
-            // GET: Render Delete Confirmation
-            [HttpGet]
-            public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
+        {
+            var contract = await _unitOfWork.Contracts.GetByIdAsync(id, c => c.Employee!);
+            if (contract == null)
             {
-                var contract = await _unitOfWork.Contracts.GetByIdAsync(id);
-                if (contract == null) return NotFound();
-
-                var contractVm = _mapper.Map<ContractViewModel>(contract);
-                return View(contractVm);
+                return NotFound();
             }
+            var contractVm = _mapper.Map<ContractViewModel>(contract);
+            return View(contractVm);
+        }
 
-            // POST: Delete of Contract
-            [HttpPost, ActionName("Delete")]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var contract = await _unitOfWork.Contracts.GetByIdAsync(id);
+            if (contract == null)
             {
-                var contract = await _unitOfWork.Contracts.GetByIdAsync(id);
-                if (contract == null) return NotFound();
-
-                _unitOfWork.Contracts.Delete(contract);
-                await _unitOfWork.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
+            _unitOfWork.Contracts.Delete(contract);
+            await _unitOfWork.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
+}

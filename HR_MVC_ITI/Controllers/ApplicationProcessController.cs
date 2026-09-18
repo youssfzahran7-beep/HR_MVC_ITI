@@ -23,7 +23,6 @@ public class ApplicationProcessController : Controller
     {
         var applications = await _unitOfWork.ApplicationProcesses.GetAllAsync();
         var applicationViewModels = _mapper.Map<List<ApplicationProcessViewModel>>(applications);
-        await Populate(applicationViewModels);
         return View(applicationViewModels);
     }
 
@@ -37,7 +36,6 @@ public class ApplicationProcessController : Controller
         }
 
         var applicationViewModel = _mapper.Map<ApplicationProcessViewModel>(application);
-        await Populate(new[] { applicationViewModel });
         return View(applicationViewModel);
     }
 
@@ -134,20 +132,5 @@ public class ApplicationProcessController : Controller
             candidate);
 
         ViewBag.Requirements = new SelectList(recruitments, "Id", "Title", requirement);
-    }
-
-    private async Task Populate(IEnumerable<ApplicationProcessViewModel> applications)
-    {
-        var candidates = (await _unitOfWork.Candidates.GetAllAsync())
-            .ToDictionary(x => x.Id, x => x.FirstName + " " + x.LastName);
-
-        var recruitments = (await _unitOfWork.Recruitments.GetAllAsync())
-            .ToDictionary(x => x.Id, x => x.Title);
-
-        foreach (var application in applications)
-        {
-            application.CandidateName = candidates.GetValueOrDefault(application.CandidateId, "Unknown candidate");
-            application.RequirementTitle = recruitments.GetValueOrDefault(application.RecruitmentId, "Unknown requirement");
-        }
     }
 }

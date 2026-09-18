@@ -1,45 +1,76 @@
-﻿@model IEnumerable<HR_MVC_ITI.ViewModels.OfferViewModel>
+@model IEnumerable<HR_MVC_ITI.ViewModels.OfferViewModel>
 
 @{
-    ViewData["Title"] = "List Offer";
+    ViewData["Title"] = "List Offers";
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2> List Offer</h2>
-        <a asp-action="Create" class="btn btn-primary">Create</a>
+        <h2>Job Offers Management</h2>
+        <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Create Offer</a>
     </div>
 
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-dark">
             <tr>
-                <th>Id:</th>
-                <th>IdEmployee: </th>
-                <th>Salary:</th>
-                <th>Status:</th>
-                <th>Operation:</th>
+                <th>Offer #</th>
+                <th>Candidate / Application</th>
+                <th>Interview Ref</th>
+                <th>Salary Offer</th>
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>#@item.Id</strong></td>
+                        <td>
+                            <div>
+                                <span class="badge bg-secondary">App #@item.ApplicationProcessId</span>
+                                @if (!string.IsNullOrEmpty(item.CandidateName))
+                                {
+                                    <strong class="ms-1">@item.CandidateName</strong>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            @if (item.InterviewId.HasValue)
+                            {
+                                <span class="badge bg-info text-dark">Interview #@item.InterviewId</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">None</span>
+                            }
+                        </td>
+                        <td><strong>@item.BasicSalaryOffer.ToString("C")</strong></td>
+                        <td>
+                            <span class="badge @(item.Status == HR_MVC_ITI.Models.Enumes.OfferStatus.Accepted ? "bg-success" :
+                                                item.Status == HR_MVC_ITI.Models.Enumes.OfferStatus.Rejected ? "bg-danger" : "bg-warning text-dark")">
+                                @item.Status
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white">Details</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" 
+                                      onsubmit="return confirm('Are you sure you want to delete this offer?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td>@item.Id</td>
-                    <td>@item.ApplicationProcessId</td>
-                    <td>@item.BasicSalaryOffer.ToString("C")</td>
-                    <td>
-                        <span class="badge @(item.Status == HR_MVC_ITI.Models.Enumes.OfferStatus.Accepted ? "bg-success" :
-                       item.Status== HR_MVC_ITI.Models.Enumes.OfferStatus.Rejected ? "bg-danger" : "bg-warning text-dark")">
-                            @item.Status
-                        </span>
-                    </td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
-                        </div>
-                    </td>
+                    <td colspan="6" class="text-center">No offers found.</td>
                 </tr>
             }
         </tbody>

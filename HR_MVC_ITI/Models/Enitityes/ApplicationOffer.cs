@@ -8,7 +8,11 @@ public class ApplicationOffer
 
     public int ApplicationProcessId { get; set; }
 
-    public virtual ApplicationProcess? ApplicationProcess { get; set; }
+    public ApplicationProcess? ApplicationProcess { get; set; }
+
+    public int? InterviewId { get; set; }
+
+    public ApplicationInterview? ApplicationInterview { get; set; }
 
     public decimal BasicSalaryOffer { get; set; }
 

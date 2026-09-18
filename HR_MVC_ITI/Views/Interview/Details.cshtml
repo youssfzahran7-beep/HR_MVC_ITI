@@ -1,29 +1,50 @@
-﻿@model HR_MVC_ITI.ViewModels.InterviewViewModel
+@model HR_MVC_ITI.ViewModels.InterviewViewModel
 
 @{
-    ViewData["Title"] = "Details Interview";
+    ViewData["Title"] = "Interview Details";
 }
 
 <div class="container mt-4">
     <div class="card">
         <div class="card-header bg-info text-white">
-            <h4>Details : </h4>
+            <h4>Interview Details</h4>
         </div>
         <div class="card-body">
             <dl class="row">
-                <dt class="col-sm-3">Name :</dt>
-                <dd class="col-sm-9">@Model.ApplicantionName</dd>
+                <dt class="col-sm-3">Interview ID:</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
 
-                <dt class="col-sm-3">Date :</dt>
-                <dd class="col-sm-9">@Model.InterviewDate</dd>
+                <dt class="col-sm-3">Application Process ID:</dt>
+                <dd class="col-sm-9"><span class="badge bg-secondary">#@Model.ApplicationProcessId</span></dd>
 
-                <dt class="col-sm-3">FeedBack:</dt>
-                <dd class="col-sm-9">@Model.FeedBack</dd>
+                <dt class="col-sm-3">Candidate / Application:</dt>
+                <dd class="col-sm-9"><strong>@Model.ApplicantionName</strong></dd>
+
+                <dt class="col-sm-3">Interview Date:</dt>
+                <dd class="col-sm-9">@Model.InterviewDate.ToString("yyyy-MM-dd HH:mm")</dd>
+
+                <dt class="col-sm-3">Interviewer:</dt>
+                <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.InterviewerID) ? "-" : Model.InterviewerID)</dd>
+
+                <dt class="col-sm-3">Score:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Score.HasValue)
+                    {
+                        <span class="badge @(Model.Score >= 50 ? "bg-success" : "bg-danger")">@Model.Score</span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Feedback:</dt>
+                <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.FeedBack) ? "No feedback recorded" : Model.FeedBack)</dd>
             </dl>
         </div>
         <div class="card-footer">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Details</a>
-            <a asp-action="Index" class="btn btn-secondary">Back </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </div>
     </div>
 </div>

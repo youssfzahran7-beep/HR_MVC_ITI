@@ -1,0 +1,52 @@
+@model HR_MVC_ITI.ViewModels.OfferViewModel
+
+@{
+    ViewData["Title"] = "Offer Details";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Job Offer Details #@Model.Id</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Offer ID:</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Application Process:</dt>
+                <dd class="col-sm-9"><span class="badge bg-secondary">#@Model.ApplicationProcess.Candidate.FirstName</span></dd>
+
+                <dt class="col-sm-3">Candidate Name:</dt>
+                <dd class="col-sm-9"><strong>@(string.IsNullOrEmpty(Model.CandidateName) ? "N/A" : Model.CandidateName)</strong></dd>
+
+                <dt class="col-sm-3">Related Interview:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.InterviewId.HasValue)
+                    {
+                        <span class="badge bg-info text-dark">Interview #@Model.ApplicationInterview.ApplicationProcess.Candidate.FirstName</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">None</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Basic Salary Offer:</dt>
+                <dd class="col-sm-9"><strong>@Model.BasicSalaryOffer.ToString("C")</strong></dd>
+
+                <dt class="col-sm-3">Offer Status:</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @(Model.Status == HR_MVC_ITI.Models.Enumes.OfferStatus.Accepted ? "bg-success" :
+                                        Model.Status == HR_MVC_ITI.Models.Enumes.OfferStatus.Rejected ? "bg-danger" : "bg-warning text-dark")">
+                        @Model.Status
+                    </span>
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>

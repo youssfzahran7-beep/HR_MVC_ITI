@@ -1,14 +1,15 @@
 @model HR_MVC_ITI.ViewModels.InterviewViewModel
 
 @{
-    ViewData["Title"] = "Create Interview";
+    ViewData["Title"] = "Edit Interview";
 }
 
 <div class="container mt-4">
-    <h2>Schedule New Interview</h2>
+    <h2>Edit Interview</h2>
 
-    <form asp-action="Create" method="post">
+    <form asp-action="Edit" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
 
         <div class="mb-3">
             <label asp-for="ApplicationProcessId" class="form-label">Application Process (Candidate):</label>
@@ -25,7 +26,7 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="InterviewerID" class="form-label">Interviewer Name:</label>
+            <label asp-for="InterviewerID" class="form-label">Interviewer ID / Name:</label>
             <input asp-for="InterviewerID" class="form-control" />
             <span asp-validation-for="InterviewerID" class="text-danger"></span>
         </div>
@@ -42,7 +43,7 @@
             <span asp-validation-for="FeedBack" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-success">Save</button>
+        <button type="submit" class="btn btn-primary">Update</button>
         <a asp-action="Index" class="btn btn-secondary">Back</a>
     </form>
 </div>

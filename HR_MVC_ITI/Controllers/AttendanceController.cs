@@ -190,6 +190,7 @@ public class AttendanceController : Controller
             }
         }
 
+        await _unitOfWork.Attendances.UpdateAsync(attendance);
         await _unitOfWork.SaveChangesAsync();
     }
 

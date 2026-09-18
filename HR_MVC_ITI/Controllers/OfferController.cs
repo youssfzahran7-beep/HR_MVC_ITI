@@ -1,135 +1,150 @@
 using AutoMapper;
 using HR_MVC_ITI.Models.Enitityes;
-using HR_MVC_ITI.Models.Enumes;
 using HR_MVC_ITI.Models.IRepository;
 using HR_MVC_ITI.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 namespace HR_MVC_ITI.Controllers
+{
+    [Authorize(Roles = "HR")]
+    public class OfferController : Controller
     {
-        public class OfferController : Controller
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public OfferController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            private readonly IUnitOfWork _unitOfWork;
-            private readonly IMapper _mapper;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
 
-            public OfferController(IUnitOfWork unitOfWork, IMapper mapper)
+        // GET: /Offer
+        public async Task<IActionResult> Index()
+        {
+            var offers = await _unitOfWork.Offers.GetAllAsync(o => o.ApplicationProcess!, o => o.ApplicationInterview!);
+            var offerVms = _mapper.Map<IEnumerable<OfferViewModel>>(offers);
+            return View(offerVms);
+        }
+
+        // GET: /Offer/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationInterview!);
+            if (offer == null) return NotFound();
+
+            var vm = _mapper.Map<OfferViewModel>(offer);
+            return View(vm);
+        }
+
+        // GET: /Offer/Create
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            await PopulateSelectLists();
+            return View();
+        }
+
+        // POST: /Offer/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(OfferViewModel offerVm)
+        {
+            if (!ModelState.IsValid)
             {
-                _unitOfWork = unitOfWork;
-                _mapper = mapper;
-            }
-
-            // 1. GET: Display List of Application Offers
-            [HttpGet]
-            public async Task<IActionResult> Index()
-            {
-                var offers = await _unitOfWork.Offers.GetAllAsync();
-                var offerVms = _mapper.Map<IEnumerable<OfferViewModel>>(offers);
-                return View(offerVms);
-            }
-
-            // 2. GET: Retrieves Details of Application Offer
-            [HttpGet]
-            public async Task<IActionResult> Details(int id)
-            {
-                var offer = await _unitOfWork.Offers.GetByIdAsync(id);
-                if (offer == null)
-                {
-                    return NotFound();
-                }
-
-                var offerVm = _mapper.Map<OfferViewModel>(offer);
+                await PopulateSelectLists(offerVm.ApplicationProcessId, offerVm.InterviewId);
                 return View(offerVm);
             }
 
-            // 3. GET: Render Create Page
-            [HttpGet]
-            public IActionResult Create()
+            var offer = _mapper.Map<ApplicationOffer>(offerVm);
+            await _unitOfWork.Offers.AddAsync(offer);
+            await _unitOfWork.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: /Offer/Edit/5
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationInterview!);
+            if (offer == null) return NotFound();
+
+            var vm = _mapper.Map<OfferViewModel>(offer);
+            await PopulateSelectLists(vm.ApplicationProcessId, vm.InterviewId);
+            return View(vm);
+        }
+
+        // POST: /Offer/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, OfferViewModel offerVm)
+        {
+            if (id != offerVm.Id) return BadRequest();
+
+            if (!ModelState.IsValid)
             {
-                return View();
-            }
-
-            // 4. POST: Save New Application Offer
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create(OfferViewModel offerVm)
-            {
-                if (!ModelState.IsValid)
-                {
-                    return View(offerVm);
-                }
-
-                var offerEntity = _mapper.Map<ApplicationOffer>(offerVm);
-                await _unitOfWork.Offers.AddAsync(offerEntity);
-                await _unitOfWork.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            // 5. GET: Render Edit Page
-            [HttpGet]
-            public async Task<IActionResult> Edit(int id)
-            {
-                var offer = await _unitOfWork.Offers.GetByIdAsync(id);
-                if (offer == null)
-                {
-                    return NotFound();
-                }
-
-                var offerVm = _mapper.Map<OfferViewModel>(offer);
+                await PopulateSelectLists(offerVm.ApplicationProcessId, offerVm.InterviewId);
                 return View(offerVm);
             }
 
-            // 6. POST: Save Edited Application Offer
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(OfferViewModel offerVm)
+            var existing = await _unitOfWork.Offers.GetByIdAsync(id);
+            if (existing == null) return NotFound();
+
+            _mapper.Map(offerVm, existing);
+           await _unitOfWork.Offers.UpdateAsync(existing);
+            await _unitOfWork.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationInterview!);
+            if (offer == null) return NotFound();
+
+            var vm = _mapper.Map<OfferViewModel>(offer);
+            return View(vm);
+        }
+
+        // POST: /Offer/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var offer = await _unitOfWork.Offers.GetByIdAsync(id);
+            if (offer == null) return NotFound();
+
+            _unitOfWork.Offers.Delete(offer);
+            await _unitOfWork.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+       
+        private async Task PopulateSelectLists(int? selectedApplicationProcessId = null, int? selectedInterviewId = null)
+        {
+            // Application processes (include Candidate if your repo supports include)
+            var applications = await _unitOfWork.ApplicationProcesses.GetAllAsync(a => a.Candidate!);
+            var appItems = applications.Select(a => new
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(offerVm);
-                }
+                a.Id,
+                Name = a.Candidate != null
+                    ? $"{a.Candidate.FirstName} {a.Candidate.LastName}"
+                    : $"App #{a.Id}"
+            });
+            ViewBag.ApplicationProcesses = new SelectList(appItems, "Id", "Name", selectedApplicationProcessId);
 
-                var existingOffer = await _unitOfWork.Offers.GetByIdAsync(offerVm.Id);
-                if (existingOffer == null)
-                {
-                    return NotFound();
-                }
-
-                _mapper.Map(offerVm, existingOffer);
-                await _unitOfWork.Offers.UpdateAsync(existingOffer);
-                await _unitOfWork.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            // 7. GET: Render Delete Confirmation
-            [HttpGet]
-            public async Task<IActionResult> Delete(int id)
+            // Interviews (show candidate name if available)
+            var interviews = await _unitOfWork.Interviews.GetAllAsync(i => i.ApplicationProcess!);
+            var interviewItems = interviews.Select(i => new
             {
-                var offer = await _unitOfWork.Offers.GetByIdAsync(id);
-                if (offer == null)
-                {
-                    return NotFound();
-                }
-
-                var offerVm = _mapper.Map<OfferViewModel>(offer);
-                return View(offerVm);
-            }
-
-            // 8. POST: Delete Confirmed
-            [HttpPost, ActionName("Delete")]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> DeleteConfirmed(int id)
-            {
-                var offer = await _unitOfWork.Offers.GetByIdAsync(id);
-                if (offer == null)
-                {
-                    return NotFound();
-                }
-
-                _unitOfWork.Offers.Delete(offer);
-                await _unitOfWork.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
-            }
+                i.Id,
+                Name = i.ApplicationProcess != null
+                    ? $"App #{i.ApplicationProcess.Id} - Intv #{i.Id}"
+                    : $"Interview #{i.Id}"
+            });
+            ViewBag.Interviews = new SelectList(interviewItems, "Id", "Name", selectedInterviewId);
         }
     }
+}

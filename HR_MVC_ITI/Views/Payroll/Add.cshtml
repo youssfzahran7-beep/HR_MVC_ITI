@@ -32,21 +32,18 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="BasicSalary" class="form-label"></label>
-        <input asp-for="BasicSalary" class="form-control" />
-        <span asp-validation-for="BasicSalary" class="text-danger"></span>
+        <label asp-for="BasicSalary" class="form-label">Basic Salary (Auto-Calculated on Save)</label>
+        <input asp-for="BasicSalary" class="form-control" readonly value="0" />
     </div>
 
     <div class="mb-3">
-        <label asp-for="LateDeductions" class="form-label"></label>
-        <input asp-for="LateDeductions" class="form-control" />
-        <span asp-validation-for="LateDeductions" class="text-danger"></span>
+        <label asp-for="LateDeductions" class="form-label">Late Deductions (Auto-Calculated on Save)</label>
+        <input asp-for="LateDeductions" class="form-control" readonly value="0" />
     </div>
 
     <div class="mb-3">
-        <label asp-for="OvertimeAdditions" class="form-label"></label>
-        <input asp-for="OvertimeAdditions" class="form-control" />
-        <span asp-validation-for="OvertimeAdditions" class="text-danger"></span>
+        <label asp-for="OvertimeAdditions" class="form-label">Overtime Additions (Auto-Calculated on Save)</label>
+        <input asp-for="OvertimeAdditions" class="form-control" readonly value="0" />
     </div>
 
     <button type="submit" class="btn btn-success">Save</button>

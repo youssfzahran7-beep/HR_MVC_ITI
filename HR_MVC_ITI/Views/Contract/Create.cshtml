@@ -1,0 +1,52 @@
+@model HR_MVC_ITI.Models.ViewModels.ContractViewModel
+
+@{
+    ViewData["Title"] = "Create Contract";
+}
+
+<div class="container mt-4">
+    <h2>Create New Contract</h2>
+
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="EmployeeId" class="form-label">Employee:</label>
+            <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="form-select">
+                <option value="">-- Select Employee --</option>
+            </select>
+            <span asp-validation-for="EmployeeId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="BasicSalary" class="form-label">Basic Salary:</label>
+            <input asp-for="BasicSalary" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="BasicSalary" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="StartDate" class="form-label">Start Date:</label>
+            <input asp-for="StartDate" class="form-control" type="date" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="EndDate" class="form-label">End Date (Optional):</label>
+            <input asp-for="EndDate" class="form-control" type="date" />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label">Contract Status:</label>
+            <select asp-for="Status" asp-items="Html.GetEnumSelectList<HR_MVC_ITI.Models.Enumes.ContractStatus>()" class="form-select"></select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Contract</button>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

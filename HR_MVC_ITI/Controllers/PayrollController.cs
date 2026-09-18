@@ -25,11 +25,12 @@ public class PayrollController : Controller
         return RedirectToAction(nameof(GetAll));
     }
 
+
     public async Task<IActionResult> GetAll()
     {
-        var payrolls = await _unitOfWork.Payrolls.GetAllAsync();
+  
+        var payrolls = await _unitOfWork.Payrolls.GetAllAsync(p => p.Employee!);
         var payrollViewModels = _mapper.Map<List<PayrollViewModel>>(payrolls);
-        await PopulateEmployeeNames(payrollViewModels);
 
         return View(payrollViewModels);
     }
@@ -54,6 +55,32 @@ public class PayrollController : Controller
             return View("Add", payrollViewModel);
         }
 
+        // Auto-calculate from Attendance and Contract
+        var attendances = await _unitOfWork.Attendances.GetAllAsync();
+        var monthlyAttendances = attendances.Where(a => 
+            a.EmployeeId == payrollViewModel.EmployeeId && 
+            a.Date.Month == payrollViewModel.Month && 
+            a.Date.Year == payrollViewModel.Year).ToList();
+
+        var totalLateMinutes = monthlyAttendances.Sum(a => a.LateMinutes);
+        var totalOvertimeHours = monthlyAttendances.Sum(a => a.OvertimeHours);
+
+        var contracts = await _unitOfWork.Contracts.GetAllAsync();
+        var activeContract = contracts.FirstOrDefault(c => c.EmployeeId == payrollViewModel.EmployeeId && c.Status == HR_MVC_ITI.Models.Enumes.ContractStatus.Activated) 
+                             ?? contracts.LastOrDefault(c => c.EmployeeId == payrollViewModel.EmployeeId);
+
+        decimal basicSalary = activeContract != null ? activeContract.BasicSalary : payrollViewModel.BasicSalary;
+        
+        // Assuming 30 days and 8 working hours per day
+        decimal hourlyRate = basicSalary > 0 ? basicSalary / (30m * 8m) : 0;
+
+        decimal calculatedLateDeductions = (decimal)totalLateMinutes / 60m * hourlyRate;
+        decimal calculatedOvertimeAdditions = totalOvertimeHours * hourlyRate * 1.5m; // 1.5x for overtime
+
+        payrollViewModel.BasicSalary = basicSalary;
+        payrollViewModel.LateDeductions = Math.Round(calculatedLateDeductions, 2);
+        payrollViewModel.OvertimeAdditions = Math.Round(calculatedOvertimeAdditions, 2);
+
         var payroll = _mapper.Map<Payroll>(payrollViewModel);
         await _unitOfWork.Payrolls.AddAsync(payroll);
         await _unitOfWork.SaveChangesAsync();
@@ -63,7 +90,7 @@ public class PayrollController : Controller
 
     public async Task<IActionResult> Update(int id)
     {
-        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id);
+        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id, p => p.Employee!);
 
         if (payroll == null)
         {
@@ -91,20 +118,41 @@ public class PayrollController : Controller
             return View("Update", payrollViewModel);
         }
 
-        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id);
+        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id, p => p.Employee!);
 
         if (payroll == null)
         {
             return NotFound();
         }
 
-        payroll.EmployeeId = payrollViewModel.EmployeeId;
-        payroll.Month = payrollViewModel.Month;
-        payroll.Year = payrollViewModel.Year;
-        payroll.BasicSalary = payrollViewModel.BasicSalary;
-        payroll.LateDeductions = payrollViewModel.LateDeductions;
-        payroll.OvertimeAdditions = payrollViewModel.OvertimeAdditions;
+        // Auto-calculate from Attendance and Contract
+        var attendances = await _unitOfWork.Attendances.GetAllAsync();
+        var monthlyAttendances = attendances.Where(a => 
+            a.EmployeeId == payrollViewModel.EmployeeId && 
+            a.Date.Month == payrollViewModel.Month && 
+            a.Date.Year == payrollViewModel.Year).ToList();
 
+        var totalLateMinutes = monthlyAttendances.Sum(a => a.LateMinutes);
+        var totalOvertimeHours = monthlyAttendances.Sum(a => a.OvertimeHours);
+
+        var contracts = await _unitOfWork.Contracts.GetAllAsync();
+        var activeContract = contracts.FirstOrDefault(c => c.EmployeeId == payrollViewModel.EmployeeId && c.Status == HR_MVC_ITI.Models.Enumes.ContractStatus.Activated) 
+                             ?? contracts.LastOrDefault(c => c.EmployeeId == payrollViewModel.EmployeeId);
+
+        decimal basicSalary = activeContract != null ? activeContract.BasicSalary : payrollViewModel.BasicSalary;
+        
+        // Assuming 30 days and 8 working hours per day
+        decimal hourlyRate = basicSalary > 0 ? basicSalary / (30m * 8m) : 0;
+
+        decimal calculatedLateDeductions = (decimal)totalLateMinutes / 60m * hourlyRate;
+        decimal calculatedOvertimeAdditions = totalOvertimeHours * hourlyRate * 1.5m; // 1.5x for overtime
+
+        payrollViewModel.BasicSalary = basicSalary;
+        payrollViewModel.LateDeductions = Math.Round(calculatedLateDeductions, 2);
+        payrollViewModel.OvertimeAdditions = Math.Round(calculatedOvertimeAdditions, 2);
+
+        _mapper.Map(payrollViewModel, payroll);
+        await _unitOfWork.Payrolls.UpdateAsync(payroll);
         await _unitOfWork.SaveChangesAsync();
 
         return RedirectToAction(nameof(GetAll));
@@ -112,7 +160,7 @@ public class PayrollController : Controller
 
     public async Task<IActionResult> Delete(int id)
     {
-        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id);
+        var payroll = await _unitOfWork.Payrolls.GetByIdAsync(id, p => p.Employee!);
 
         if (payroll == null)
         {
@@ -134,16 +182,5 @@ public class PayrollController : Controller
             "Id",
             "FullName",
             selectedEmployeeId);
-    }
-
-    private async Task PopulateEmployeeNames(IEnumerable<PayrollViewModel> payrolls)
-    {
-        var employees = (await _unitOfWork.Employees.GetAllAsync())
-            .ToDictionary(employee => employee.Id, employee => employee.FullName);
-
-        foreach (var payroll in payrolls)
-        {
-            payroll.EmployeeName = employees.GetValueOrDefault(payroll.EmployeeId, "Unknown employee");
-        }
     }
 }

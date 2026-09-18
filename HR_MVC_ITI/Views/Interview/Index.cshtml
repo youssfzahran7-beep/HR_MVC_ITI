@@ -1,4 +1,3 @@
-﻿
 @model IEnumerable<HR_MVC_ITI.ViewModels.InterviewViewModel>
 
 @{
@@ -7,36 +6,64 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Table Interview</h2>
-        <a asp-action="Create" class="btn btn-primary"> Add interview</a>
+        <h2>Interviews Management</h2>
+        <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Interview</a>
     </div>
 
     <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
-                <th>Name :</th>
-                <th>Date : </th>
-                <th>Feed Back:</th>
-                <th>Operation :</th>
+                <th>App #</th>
+                <th>Candidate / Application</th>
+                <th>Date & Time</th>
+                <th>Interviewer</th>
+                <th>Score</th>
+                <th>Feedback</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">#@item.ApplicationProcessId</span>
+                        </td>
+                        <td>
+                            <strong>@item.ApplicantionName</strong>
+                        </td>
+                        <td>@item.InterviewDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@item.InterviewerID</td>
+                        <td>
+                            @if (item.Score.HasValue)
+                            {
+                                <span class="badge @(item.Score >= 50 ? "bg-success" : "bg-danger")">@item.Score</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                        <td>@item.FeedBack</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white">Details</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" 
+                                      onsubmit="return confirm('Are you sure you want to delete this interview?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td>@item.ApplicantionName</td>
-                    <td>@item.InterviewDate.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>@item.FeedBack</td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
-                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" 
-                            onsubmit="return confirm('Do You Sure you want Delete ?');">
-                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                            </form>
-                        </div>
-                    </td>
+                    <td colspan="7" class="text-center">No interviews found.</td>
                 </tr>
             }
         </tbody>

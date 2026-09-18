@@ -4,6 +4,7 @@ using HR_MVC_ITI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR_MVC_ITI.Migrations
 {
     [DbContext(typeof(HRDbContext))]
-    partial class HRDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260918165954_AddApplicationProcessRelationships")]
+    partial class AddApplicationProcessRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,9 +70,6 @@ namespace HR_MVC_ITI.Migrations
                     b.Property<decimal>("BasicSalaryOffer")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("InterviewId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -77,9 +77,7 @@ namespace HR_MVC_ITI.Migrations
 
                     b.HasIndex("ApplicationProcessId");
 
-                    b.HasIndex("InterviewId");
-
-                    b.ToTable("ApplicationOffers", (string)null);
+                    b.ToTable("ApplicationOffers");
                 });
 
             modelBuilder.Entity("HR_MVC_ITI.Models.Enitityes.ApplicationProcess", b =>
@@ -542,7 +540,7 @@ namespace HR_MVC_ITI.Migrations
             modelBuilder.Entity("HR_MVC_ITI.Models.Enitityes.ApplicationInterview", b =>
                 {
                     b.HasOne("HR_MVC_ITI.Models.Enitityes.ApplicationProcess", "ApplicationProcess")
-                        .WithMany("Interviews")
+                        .WithMany()
                         .HasForeignKey("ApplicationProcessId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -553,17 +551,10 @@ namespace HR_MVC_ITI.Migrations
             modelBuilder.Entity("HR_MVC_ITI.Models.Enitityes.ApplicationOffer", b =>
                 {
                     b.HasOne("HR_MVC_ITI.Models.Enitityes.ApplicationProcess", "ApplicationProcess")
-                        .WithMany("Offers")
+                        .WithMany()
                         .HasForeignKey("ApplicationProcessId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("HR_MVC_ITI.Models.Enitityes.ApplicationInterview", "ApplicationInterview")
-                        .WithMany("Offers")
-                        .HasForeignKey("InterviewId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("ApplicationInterview");
 
                     b.Navigation("ApplicationProcess");
                 });
@@ -680,18 +671,6 @@ namespace HR_MVC_ITI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HR_MVC_ITI.Models.Enitityes.ApplicationInterview", b =>
-                {
-                    b.Navigation("Offers");
-                });
-
-            modelBuilder.Entity("HR_MVC_ITI.Models.Enitityes.ApplicationProcess", b =>
-                {
-                    b.Navigation("Interviews");
-
-                    b.Navigation("Offers");
                 });
 
             modelBuilder.Entity("HR_MVC_ITI.Models.Enitityes.Candidate", b =>

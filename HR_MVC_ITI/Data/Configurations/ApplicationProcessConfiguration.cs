@@ -26,6 +26,14 @@ public class ApplicationProcessConfiguration : IEntityTypeConfiguration<Applicat
         builder.Property(a => a.AppliedDate)
             .IsRequired();
 
+        builder.HasOne(a => a.Candidate)
+            .WithMany(c => c.Applications)
+            .HasForeignKey(a => a.CandidateId)
+            .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne(a => a.Recruitment)
+            .WithMany(r => r.Applications)
+            .HasForeignKey(a => a.RecruitmentId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

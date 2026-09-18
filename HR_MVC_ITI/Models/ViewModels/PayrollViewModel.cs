@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HR_MVC_ITI.Models.Enitityes;
 
 namespace HR_MVC_ITI.Models.ViewModels;
 
@@ -9,6 +10,9 @@ public class PayrollViewModel
     [Required]
     [Display(Name = "Employee ID")]
     public int EmployeeId { get; set; }
+
+    // Direct Navigation Property
+    public Employee? Employee { get; set; }
 
     [Display(Name = "Employee Name")]
     public string EmployeeName { get; set; } = string.Empty;
