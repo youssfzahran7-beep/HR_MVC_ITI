@@ -8,8 +8,17 @@ namespace HR_MVC_ITI.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly HR_MVC_ITI.Models.IRepository.IUnitOfWork _unitOfWork;
+
+        public HomeController(HR_MVC_ITI.Models.IRepository.IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var employees = await _unitOfWork.Employees.GetAllAsync();
+            ViewBag.EmployeeCount = employees.Count();
             return View();
         }
 
