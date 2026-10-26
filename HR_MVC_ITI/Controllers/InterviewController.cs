@@ -24,7 +24,9 @@ namespace HR_MVC_ITI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var interviews = await _unitOfWork.Interviews.GetAllAsync(i => i.ApplicationProcess!);
+            var interviews = await _unitOfWork.Interviews.GetAllAsync(
+                i => i.ApplicationProcess!, 
+                i => i.ApplicationProcess!.Candidate!);
             var interviewVms = _mapper.Map<IEnumerable<InterviewViewModel>>(interviews);
             return View(interviewVms);
         }
@@ -33,7 +35,9 @@ namespace HR_MVC_ITI.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var interview = await _unitOfWork.Interviews.GetByIdAsync(id, i => i.ApplicationProcess!);
+            var interview = await _unitOfWork.Interviews.GetByIdAsync(id, 
+                i => i.ApplicationProcess!, 
+                i => i.ApplicationProcess!.Candidate!);
             if (interview == null)
             {
                 return NotFound();

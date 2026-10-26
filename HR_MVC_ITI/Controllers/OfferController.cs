@@ -23,7 +23,7 @@ namespace HR_MVC_ITI.Controllers
         // GET: /Offer
         public async Task<IActionResult> Index()
         {
-            var offers = await _unitOfWork.Offers.GetAllAsync(o => o.ApplicationProcess!, o => o.ApplicationInterview!);
+            var offers = await _unitOfWork.Offers.GetAllAsync(o => o.ApplicationProcess!, o => o.ApplicationProcess!.Candidate!, o => o.ApplicationInterview!);
             var offerVms = _mapper.Map<IEnumerable<OfferViewModel>>(offers);
             return View(offerVms);
         }
@@ -31,7 +31,7 @@ namespace HR_MVC_ITI.Controllers
         // GET: /Offer/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationInterview!);
+            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationProcess!.Candidate!, o => o.ApplicationInterview!);
             if (offer == null) return NotFound();
 
             var vm = _mapper.Map<OfferViewModel>(offer);
@@ -67,7 +67,7 @@ namespace HR_MVC_ITI.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationInterview!);
+            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationProcess!.Candidate!, o => o.ApplicationInterview!);
             if (offer == null) return NotFound();
 
             var vm = _mapper.Map<OfferViewModel>(offer);
@@ -101,7 +101,7 @@ namespace HR_MVC_ITI.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationInterview!);
+            var offer = await _unitOfWork.Offers.GetByIdAsync(id, o => o.ApplicationProcess!, o => o.ApplicationProcess!.Candidate!, o => o.ApplicationInterview!);
             if (offer == null) return NotFound();
 
             var vm = _mapper.Map<OfferViewModel>(offer);

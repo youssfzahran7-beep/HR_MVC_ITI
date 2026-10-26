@@ -21,7 +21,7 @@ public class ApplicationProcessController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var applications = await _unitOfWork.ApplicationProcesses.GetAllAsync();
+        var applications = await _unitOfWork.ApplicationProcesses.GetAllAsync(a => a.Candidate, a => a.Recruitment);
         var applicationViewModels = _mapper.Map<List<ApplicationProcessViewModel>>(applications);
         return View(applicationViewModels);
     }

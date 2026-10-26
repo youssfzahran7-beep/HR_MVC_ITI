@@ -29,7 +29,7 @@ public class EmployeeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var employees = await _unitOfWork.Employees.GetAllAsync();
+        var employees = await _unitOfWork.Employees.GetAllAsync(e => e.User!);
         return View(employees);
     }
 
