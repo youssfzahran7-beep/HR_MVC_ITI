@@ -29,7 +29,6 @@ public class AccountController : Controller
         ViewData["ReturnUrl"] = returnUrl;
         return View(new LoginViewModel());
     }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
